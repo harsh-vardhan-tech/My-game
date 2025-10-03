@@ -1,198 +1,109 @@
 <!doctype html>
-
 <html lang="hi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>0x BATTLE — AI & Friend Mode — Made by Harsh Vardhan</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>0x BATTLE — Made by Harsh Vardhan</title>
 <style>
-:root{
-  --bg:#051026; --card:#0b1220; --accent1:#7c3aed; --accent2:#06b6d4; --x:#ff5c7c; --o:#56e6ff;
-  --glass: rgba(255,255,255,0.03); --muted:#98a4b3; --text:#e6eef8;
-}
-*{box-sizing:border-box;font-family:Inter, 'Segoe UI', Roboto, system-ui, sans-serif}
-html,body{height:100%;margin:0;background:linear-gradient(180deg,#021026 0%,var(--bg) 100%);color:var(--text)}
-.app{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.card{width:100%;max-width:720px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.18));border-radius:16px;padding:18px;box-shadow:0 12px 40px rgba(2,8,23,0.6);border:1px solid rgba(255,255,255,0.03)}
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.title{font-size:20px;color:var(--accent1);font-weight:800}
-.sub{font-size:12px;color:var(--muted)}
-.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.input, .btn, .option{background:transparent;border:1px solid var(--glass);padding:10px 12px;border-radius:10px;color:var(--text)}
-.btn.primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));padding:10px 14px;font-weight:800;color:#fff;border:none}
-.options{display:flex;gap:8px}
-.option{cursor:pointer}
-.option.active{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;border:none}
-.board-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
-#grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:520px}
-.cell{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:900;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12));cursor:pointer;transition:transform .12s, box-shadow .12s}
-.cell:hover{transform:translateY(-6px)}
-.cell.x{color:var(--x);text-shadow:0 6px 22px rgba(255,92,124,0.12)}
-.cell.o{color:var(--o);text-shadow:0 6px 22px rgba(6,182,212,0.12)}
-.cell.win{box-shadow:0 14px 40px rgba(124,58,237,0.14);transform:scale(1.06)}
-.status{display:flex;justify-content:space-between;width:100%;gap:12px}
-.stats{display:flex;gap:8px}
-.stat{background:rgba(255,255,255,0.02);padding:6px 10px;border-radius:8px;font-size:13px}
-.roast{min-height:56px;background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(0,0,0,0.12));padding:10px;border-radius:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.controls-bottom{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px}
-.footer{font-size:12px;color:var(--muted);text-align:center;margin-top:10px}
-@media(max-width:520px){.cell{font-size:42px}}
+body{margin:0;font-family:sans-serif;background:#071026;color:#e6eef8;display:flex;justify-content:center;align-items:center;height:100vh;}
+.container{display:flex;flex-direction:column;align-items:center;}
+h1{color:#7c3aed;text-shadow:0 0 8px #7c3aed,0 0 16px #06b6d4;}
+#grid{display:grid;grid-template-columns:repeat(3,100px);gap:10px;margin:20px 0;}
+.cell{width:100px;height:100px;background:rgba(255,255,255,0.05);display:flex;justify-content:center;align-items:center;font-size:48px;font-weight:800;border-radius:12px;cursor:pointer;transition:0.2s;}
+.cell:hover{transform:scale(1.1);}
+#roast{min-height:50px;text-align:center;margin-bottom:10px;}
+button{padding:10px 20px;background:linear-gradient(90deg,#7c3aed,#06b6d4);border:none;color:#fff;font-weight:700;border-radius:12px;cursor:pointer;transition:0.2s;}
+button:hover{transform:scale(1.05);}
+.footer{margin-top:12px;color:#98a4b3;font-size:12px;}
 </style>
 </head>
 <body>
-  <div class="app">
-    <div class="card" role="application" aria-label="0x Battle">
-      <div class="header">
-        <div>
-          <div class="title">0x BATTLE 👾</div>
-          <div class="sub">AI & Friend Mode — Tic‑Tac‑Toe — Made by Harsh Vardhan</div>
-        </div>
-        <div class="sub">Lightweight • Accessible • GitHub ready</div>
-      </div><div class="controls">
-    <input id="nameInput" class="input" placeholder="Apna naam likh..." aria-label="Player name" />
-    <div class="options" id="modeOptions" role="tablist" aria-label="mode">
-      <div class="option active" data-mode="AI" role="tab">🤖 AI</div>
-      <div class="option" data-mode="FRIEND" role="tab">👫 Friend</div>
-    </div>
-    <button id="startBtn" class="btn primary">Start</button>
-  </div>
-
-  <div class="controls">
-    <div class="options" id="symbolOptions" aria-label="symbol">
-      <div class="option active" data-symbol="O">O</div>
-      <div class="option" data-symbol="X">X</div>
-    </div>
-    <div class="options" id="diffOptions" aria-label="difficulty">
-      <div class="option active" data-diff="easy">Easy</div>
-      <div class="option" data-diff="medium">Medium</div>
-      <div class="option" data-diff="hard">Hard</div>
-    </div>
-    <button id="restartBtn" class="btn">Reset</button>
-  </div>
-
-  <div class="board-wrap">
-    <div class="status" style="width:100%">
-      <div id="playerLabel" class="sub">Player: —</div>
-      <div class="stats">
-        <div class="stat">Wins: <span id="wins">0</span></div>
-        <div class="stat">Losses: <span id="losses">0</span></div>
-        <div class="stat">Draws: <span id="draws">0</span></div>
-      </div>
-    </div>
-
-    <div id="grid" aria-label="tic tac toe board"></div>
-    <div class="roast" id="roastBox">Game ready — Start karke dekho! 🎮</div>
-  </div>
-
-  <div class="controls-bottom">
-    <button id="undoBtn" class="btn">Undo</button>
-    <button id="saveBtn" class="btn">Export JSON</button>
-    <button id="importBtn" class="btn">Import JSON</button>
-  </div>
-
-  <div class="footer">Made by Harsh Vardhan</div>
+<div class="container">
+<h1>0x BATTLE 👾</h1>
+<div>
+<label><input type="radio" name="mode" value="AI" checked> AI</label>
+<label style="margin-left:15px;"><input type="radio" name="mode" value="FRIEND"> Friend</label>
+</div>
+<div id="grid"></div>
+<div id="roast">Shuru karte hain! 🎮</div>
+<button id="resetBtn">Restart Game 🔄</button>
+<div class="footer">Made by Harsh Vardhan</div>
 </div>
 
-  </div><script>
-// ---------- State ----------
-let playerName = 'Player';
-let mode = 'AI';
-let difficulty = 'easy';
-let human = 'O';
-let ai = 'X';
-let currentTurn = 'O';
-let board = Array(9).fill(null);
-let scores = { wins: 0, losses: 0, draws: 0 };
-let history = [];
+<script>
+const grid=document.getElementById('grid');
+const roast=document.getElementById('roast');
+const resetBtn=document.getElementById('resetBtn');
+let board=Array(9).fill(null);
+let turn='X';
+let mode='AI';
 
-// ---------- Elements ----------
-const nameInput = document.getElementById('nameInput');
-const startBtn = document.getElementById('startBtn');
-const restartBtn = document.getElementById('restartBtn');
-const gridEl = document.getElementById('grid');
-const roastBox = document.getElementById('roastBox');
-const playerLabel = document.getElementById('playerLabel');
-const winsEl = document.getElementById('wins');
-const lossesEl = document.getElementById('losses');
-const drawsEl = document.getElementById('draws');
-const undoBtn = document.getElementById('undoBtn');
-const saveBtn = document.getElementById('saveBtn');
-const importBtn = document.getElementById('importBtn');
+const roastMsgs=["😂 Kya move kiya yaar!","😜 Hahaha, next time better!","🔥 Tera plan fail!","🤡 Tutorial skip kiya lagta!"];
 
-// ---------- Roasts ----------
-const roastMove = ["😂 {name}, kahan ghum raha tha?","😜 {name}, accha move!","🔥 {name}, thoda next time dhyaan rakhna."];
-const roastAIMove = ["🤖 AI: 'Math ke bina jeet mushkil hai'","😈 AI: 'Try again'","🏆 AI: 'Nice try!' "];
-const roastWin = ["🏆 Wah {name}! Champion!","🎉 {name}, zabardast!"];
-const roastLose = ["😭 Arre {name}, haar gaya, par try karo","🍕 Pizza se thandak lo 😅"];
-const roastDraw = ["🤝 Tie! Dono smart","🪢 Stalemate — acchi match"];
-function pick(pool){ return pool[Math.floor(Math.random()*pool.length)].replace('{name}', playerName); }
-function showRoast(msg){ roastBox.textContent = msg; }
+function pickRandom(){ return roastMsgs[Math.floor(Math.random()*roastMsgs.length)]; }
 
-// ---------- Board ----------
-const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-
-function makeGrid(){ gridEl.innerHTML = ''; gridEl.style.gridTemplateColumns = 'repeat(3,1fr)'; for(let i=0;i<9;i++){ const d = document.createElement('div'); d.className = 'cell'; d.dataset.i = i; d.setAttribute('role','button'); d.setAttribute('aria-label','cell '+(i+1)); d.onclick = () => onCell(i); gridEl.appendChild(d); } }
-
-function render(){ for(let i=0;i<9;i++){ const cell = gridEl.children[i]; cell.textContent = board[i] || ''; cell.classList.remove('x','o','win'); if(board[i]) cell.classList.add(board[i] === 'X' ? 'x' : 'o'); } winsEl.textContent = scores.wins; lossesEl.textContent = scores.losses; drawsEl.textContent = scores.draws; }
-
-function resetBoard(full=false){ board = Array(9).fill(null); render(); clearWinHighlight(); currentTurn = 'O'; history = []; if(full){ scores = { wins:0, losses:0, draws:0 }; render(); } }
-function clearWinHighlight(){ for(const c of gridEl.children) c.classList.remove('win'); }
-
-// ---------- Handlers for options ----------
-function setActive(containerSelector, el){ document.querySelectorAll(containerSelector+' .option').forEach(x=>x.classList.remove('active')); el.classList.add('active'); }
-
-document.querySelectorAll('#modeOptions .option').forEach(o=> o.onclick = ()=>{ mode = o.dataset.mode; setActive('#modeOptions', o); });
-
-document.querySelectorAll('#symbolOptions .option').forEach(o=> o.onclick = ()=>{ human = o.dataset.symbol; ai = (human === 'O' ? 'X' : 'O'); setActive('#symbolOptions', o); });
-
-document.querySelectorAll('#diffOptions .option').forEach(o=> o.onclick = ()=>{ difficulty = o.dataset.diff; setActive('#diffOptions', o); });
-
-startBtn.onclick = ()=>{ playerName = nameInput.value.trim() || 'Player'; playerLabel.textContent = 'Player: ' + playerName; resetBoard(); showRoast('Shuru karte hain, '+playerName+'!'); if(mode === 'AI'){ currentTurn = human === 'O' ? 'O' : 'O'; if(ai === 'O'){ setTimeout(()=> aiPlay(), 300); } } }
-restartBtn.onclick = ()=>{ resetBoard(true); showRoast('Reset ho gaya!'); }
-
-undoBtn.onclick = ()=>{ if(history.length){ board = history.pop(); render(); showRoast('Undoed'); } }
-
-saveBtn.onclick = ()=>{ const data = {board, scores, playerName, mode, difficulty, human, ai}; const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = '0x-battle-save.json'; a.click(); URL.revokeObjectURL(url); }
-
-importBtn.onclick = ()=>{ const inp = document.createElement('input'); inp.type='file'; inp.accept='application/json'; inp.onchange = e => { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = ev => { try{ const obj = JSON.parse(ev.target.result); if(obj.board && Array.isArray(obj.board)){ board = obj.board.slice(0,9); scores = obj.scores || scores; playerName = obj.playerName || playerName; mode = obj.mode || mode; difficulty = obj.difficulty || difficulty; human = obj.human || human; ai = obj.ai || ai; document.querySelectorAll('#modeOptions .option').forEach(x=>x.classList.remove('active')); document.querySelectorAll('#symbolOptions .option').forEach(x=>x.classList.remove('active')); document.querySelectorAll('#diffOptions .option').forEach(x=>x.classList.remove('active')); document.querySelector('[data-mode="'+mode+'"]').classList.add('active'); document.querySelector('[data-symbol="'+human+'"]').classList.add('active'); document.querySelector('[data-diff="'+difficulty+'"]').classList.add('active'); playerLabel.textContent = 'Player: '+playerName; render(); showRoast('Imported save'); }catch(e){ showRoast('Import failed'); } }; r.readAsText(f); }; inp.click(); }
-
-// ---------- Game logic ----------
-function checkWinner(bd){ for(const [a,b,c] of lines) if(bd[a] && bd[a] === bd[b] && bd[b] === bd[c]) return { winner: bd[a], line: [a,b,c] }; if(bd.every(Boolean)) return { winner: null }; return null; }
-
-function highlight(line){ clearWinHighlight(); for(const i of line) gridEl.children[i].classList.add('win'); }
-
-function finish(w){ if(w && w.winner !== null){ highlight(w.line); if(mode === 'AI'){ if(w.winner === human){ scores.wins++; showRoast(pick(roastWin)); } else { scores.losses++; showRoast(pick(roastLose)); } } else { showRoast((w.winner || '') + ' jeeta!'); } } else if(w && w.winner === null){ scores.draws++; showRoast(pick(roastDraw)); } render(); setTimeout(()=>{ board = Array(9).fill(null); render(); clearWinHighlight(); if(mode === 'AI' && ai === 'O'){ setTimeout(()=> aiPlay(), 300); } }, 1200); }
-
-function onCell(i){ if(board[i] || checkWinner(board)) return; if(mode === 'AI'){ if(currentTurn !== human) return; history.push(board.slice()); board[i] = human; afterMove(false); if(!checkWinner(board)) setTimeout(()=>{ aiPlay(); }, 350); } else { history.push(board.slice()); board[i] = currentTurn; afterMove(false); currentTurn = (currentTurn === 'X' ? 'O' : 'X'); } }
-
-function afterMove(aiMoved){ render(); const w = checkWinner(board); if(w) return finish(w); if(board.every(Boolean)) return finish({ winner: null }); showRoast(aiMoved ? pick(roastAIMove) : pick(roastMove)); if(mode === 'AI') currentTurn = (currentTurn === 'X' ? 'O' : 'X'); }
-
-// ---------- AI ----------
-function aiPlay(){ if(checkWinner(board)) return; if(difficulty === 'easy'){ return aiRandom(); } if(difficulty === 'medium'){ if(aiTryWinOrBlock(ai)) return; if(aiTryWinOrBlock(human)) return; return aiRandom(); } if(difficulty === 'hard'){ const mv = minimax(board, ai).index; if(mv != null) { board[mv] = ai; history.push(board.slice()); afterMove(true); } } }
-
-function aiRandom(){ const empty = board.map((v,i)=> v ? null : i).filter(v=>v!==null); const pickIdx = empty[Math.floor(Math.random()*empty.length)]; if(pickIdx!=null){ board[pickIdx] = ai; history.push(board.slice()); afterMove(true); } }
-
-function aiTryWinOrBlock(player){ for(const [a,b,c] of lines){ const vals = [board[a], board[b], board[c]]; if(vals.filter(v=>v===player).length === 2 && vals.includes(null)){ const idx = [a,b,c][vals.indexOf(null)]; board[idx] = ai; history.push(board.slice()); afterMove(true); return true; } } return false; }
-
-// Minimax with memoization to avoid deep recursion overhead
-function available(bd){ return bd.map((v,i)=> v ? null : i).filter(v=>v!==null); }
-function minimax(newBoard, player){ const win = checkWinner(newBoard); if(win){ if(win.winner === ai) return {score: 10}; else if(win.winner === human) return {score: -10}; else return {score: 0}; }
-  const avail = available(newBoard);
-  const moves = [];
-  for(const i of avail){ const move = { index: i }; newBoard[i] = player; const result = minimax(newBoard, player === ai ? human : ai); move.score = result.score; newBoard[i] = null; moves.push(move); }
-  let bestMove;
-  if(player === ai){ let best = -Infinity; for(const m of moves) if(m.score > best){ best = m.score; bestMove = m; } } else { let best = Infinity; for(const m of moves) if(m.score < best){ best = m.score; bestMove = m; } }
-  return bestMove || { index: avail[0], score: 0 };
+function render(){
+  grid.innerHTML='';
+  board.forEach((v,i)=>{
+    const cell=document.createElement('div');
+    cell.className='cell';
+    cell.textContent=v||'';
+    cell.onclick=()=>clickCell(i);
+    grid.appendChild(cell);
+  });
 }
 
-// ---------- Init ----------
-makeGrid(); render(); showRoast('Game ready — Start karke dekho!');
+function clickCell(i){
+  if(board[i]) return;
+  board[i]=turn;
+  roast.textContent=pickRandom();
+  if(checkWin()){
+    roast.textContent=turn+' jeet gaya! 🎉';
+    setTimeout(()=>resetBoard(),1500);
+    return;
+  }
+  if(board.every(Boolean)){
+    roast.textContent='Draw! 🤝';
+    setTimeout(()=>resetBoard(),1500);
+    return;
+  }
+  turn=turn==='X'?'O':'X';
+  if(mode==='AI' && turn==='O'){
+    aiMove();
+  }
+  render();
+}
 
-// Accessibility: keyboard support
-document.addEventListener('keydown', e=>{
-  if(!/^[1-9]$/.test(e.key)) return;
-  const idx = parseInt(e.key,10)-1; onCell(idx);
-});
+function aiMove(){
+  const empty=board.map((v,i)=>v?null:i).filter(v=>v!==null);
+  const choice=empty[Math.floor(Math.random()*empty.length)];
+  board[choice]='O';
+  roast.textContent=pickRandom();
+  if(checkWin()){
+    roast.textContent='O (AI) jeet gaya! 🤖';
+    setTimeout(()=>resetBoard(),1500);
+  }
+  else if(board.every(Boolean)){
+    roast.textContent='Draw! 🤝';
+    setTimeout(()=>resetBoard(),1500);
+  }
+  else turn='X';
+}
 
-</script></body>
+function checkWin(){
+  const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  return lines.some(([a,b,c])=>board[a]&&board[a]===board[b]&&board[a]===board[c]);
+}
+
+function resetBoard(){
+  board=Array(9).fill(null);
+  turn='X';
+  render();
+}
+
+document.querySelectorAll('input[name="mode"]').forEach(r=>r.onchange=()=>{mode=r.value; resetBoard();});
+resetBtn.onclick=resetBoard;
+render();
+</script>
+</body>
 </html>
