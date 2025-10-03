@@ -1,81 +1,251 @@
 <!doctype html>
-
 <html lang="hi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>0x BATTLE — AI & Friend Mode — Made by Harsh Vardhan</title>
 <style>
-/* Inline CSS for single file */
+/* ---------- Root & Fonts ---------- */
 :root{
-    --bg:#071026; --card:#07182a; --accent1:#7c3aed; --accent2:#06b6d4;
-    --glass: rgba(255,255,255,0.03);
-    --muted:#98a4b3; --text:#e6eef8;
+  --bg:#071026; --accent1:#7c3aed; --accent2:#06b6d4;
+  --text:#e6eef8; --muted:#98a4b3;
+  --glass: rgba(255,255,255,0.03);
 }
-*{box-sizing:border-box;font-family:'Segoe UI',Roboto,system-ui,sans-serif;}
-html,body{height:100%;margin:0;background:radial-gradient(700px 300px at 10% 10%, rgba(124,58,237,0.09), transparent),radial-gradient(600px 300px at 90% 90%, rgba(6,182,212,0.05), transparent), var(--bg); color:var(--text);}
-.wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;}
-.card{width:100%;max-width:480px;border-radius:16px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));box-shadow:0 10px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03);}
-.logo{width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;box-shadow:0 8px 22px rgba(124,58,237,0.12);}
-.btn{padding:10px 16px;border-radius:12px;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;font-weight:700;border:none;cursor:pointer;transition:transform .2s;}
-.btn:hover{transform:scale(1.05);}
-.grid{display:grid;gap:8px;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));}
-.grid[data-size="small"]{grid-template-columns:repeat(3,1fr);font-size:46px;}
-.grid[data-size="medium"]{grid-template-columns:repeat(3,1fr);font-size:56px;}
-.grid[data-size="large"]{grid-template-columns:repeat(3,1fr);font-size:72px;}
-.cell{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(0,0,0,0.12));cursor:pointer;font-weight:800;transition:transform .12s,box-shadow .12s;}
-.cell:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(2,6,23,0.45);}
-.roast{padding:12px;margin-top:12px;border-radius:10px;background:linear-gradient(90deg, rgba(0,0,0,0.2), rgba(255,255,255,0.01));font-weight:700;min-height:56px;text-align:center;}
-.modal-overlay{position:fixed;inset:0;background:linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.8));display:flex;align-items:center;justify-content:center;z-index:50;}
-.modal{width:90%;max-width:360px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;text-align:center;}
-.input{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:10px;}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:rgba(0,0,0,0.6);padding:12px 18px;border-radius:12px;z-index:60;font-weight:800;display:none;text-align:center;}
+*{box-sizing:border-box;font-family: 'Segoe UI', Roboto, system-ui, sans-serif;}
+body{margin:0;background: var(--bg); color:var(--text); height:100vh; display:flex; justify-content:center; align-items:center;}
+button{cursor:pointer; border:none; outline:none;}
+/* ---------- Screens ---------- */
+.screen{position:absolute; top:0; left:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center; flex-direction:column; transition:all 0.4s ease; padding:20px;}
+.screen.hide{opacity:0; pointer-events:none; transform:scale(0.95);}
+h1{font-size:28px; margin:0 0 20px; text-align:center; color: var(--accent1); text-shadow:0 0 8px #7c3aed,0 0 16px #06b6d4;}
+input{padding:12px 14px; border-radius:12px; border:1px solid var(--glass); background:transparent; color:var(--text); margin-bottom:20px; width:80%; text-align:center; font-size:18px;}
+button.primary{padding:12px 24px; border-radius:14px; background:linear-gradient(90deg,var(--accent1),var(--accent2)); color:#fff; font-weight:700; font-size:18px; margin-top:10px; transition:all 0.25s ease;}
+button.primary:hover{transform:scale(1.05); box-shadow:0 8px 20px rgba(124,58,237,0.4);}
+.options{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:20px;}
+.option{padding:10px 16px; border-radius:12px; border:1px solid var(--glass); transition:all 0.2s; font-weight:600;}
+.option.active{background:linear-gradient(90deg,var(--accent1),var(--accent2)); color:#fff; border:none;}
+/* ---------- Game Screen ---------- */
+#gameScreen{flex-direction:column; width:100%; max-width:400px;}
+#grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:15px;}
+.cell{aspect-ratio:1/1; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12)); display:flex; justify-content:center; align-items:center; font-size:48px; font-weight:800; border-radius:12px; transition:transform 0.2s;}
+.cell:hover{transform:scale(1.1);}
+.roast{min-height:60px; text-align:center; background:linear-gradient(90deg, rgba(0,0,0,0.2), rgba(255,255,255,0.01)); padding:10px 12px; border-radius:12px; margin-bottom:10px; font-weight:700;}
+.score{display:flex; justify-content:space-around; width:100%; margin-bottom:10px;}
+.score div{background:rgba(255,255,255,0.02); padding:6px 12px; border-radius:8px;}
+.footer{font-size:12px; color:var(--muted); text-align:center; margin-top:12px;}
 </style>
 </head>
 <body>
-<div class="wrap">
-<div class="card" id="app">
-<div class="logo">0x</div>
-<h2 style="text-align:center;margin-top:16px;">0x BATTLE — AI & Friend Mode 😂🔥</h2>
-<div class="grid" id="grid" data-size="medium"></div>
-<div class="roast" id="roastBox">Roasts will appear here! 😎</div>
-<div style="text-align:center;margin-top:12px;"><button class="btn" id="newBtn">Start Game 🚀</button></div>
-</div>
-</div>
-<div id="modal" class="modal-overlay">
-<div class="modal">
-<h2>Welcome to 0x BATTLE! 👋</h2>
-<input id="nameInput" class="input" placeholder="Apna naam daal..." maxlength="24">
-<div style="margin-top:12px;"><button class="btn" id="pickZero">I choose 0 (०)</button> <button class="btn" id="pickX">I choose X (❌)</button></div>
-</div>
-</div>
-<div id="toast" class="toast"></div>
+
+<!-- ---------- Welcome Screen ---------- -->
+<section id="welcomeScreen" class="screen">
+  <h1>0x BATTLE 👾🔥</h1>
+  <input type="text" id="nameInput" placeholder="Apna zabardast naam likh...">
+  <button class="primary" id="startBtn">Start Game 🚀</button>
+</section>
+
+<!-- ---------- Settings Screen ---------- -->
+<section id="settingsScreen" class="screen hide">
+  <h1>Settings 🛠️</h1>
+  <div>Choose Mode:</div>
+  <div class="options" id="modeOptions">
+    <div class="option active" data-mode="AI">🤖 AI</div>
+    <div class="option" data-mode="FRIEND">👫 Friend</div>
+  </div>
+  <div>Choose Difficulty:</div>
+  <div class="options" id="diffOptions">
+    <div class="option active" data-diff="easy">Easy 😎</div>
+    <div class="option" data-diff="medium">Medium 🔥</div>
+    <div class="option" data-diff="hard">Hard 💀</div>
+  </div>
+  <div>Choose Symbol:</div>
+  <div class="options" id="symbolOptions">
+    <div class="option active" data-symbol="0">0️⃣</div>
+    <div class="option" data-symbol="X">❌</div>
+  </div>
+  <div>Board Size:</div>
+  <div class="options" id="sizeOptions">
+    <div class="option active" data-size="medium">Medium</div>
+    <div class="option" data-size="small">Small</div>
+    <div class="option" data-size="large">Large</div>
+  </div>
+  <button class="primary" id="settingsNext">Continue ➡️</button>
+</section>
+
+<!-- ---------- Game Screen ---------- -->
+<section id="gameScreen" class="screen hide">
+  <div id="playerLabel">Player: —</div>
+  <div class="score">
+    <div>Wins: <span id="wins">0</span></div>
+    <div>Losses: <span id="losses">0</span></div>
+    <div>Draws: <span id="draws">0</span></div>
+  </div>
+  <div id="grid">
+    <!-- cells generated by JS -->
+  </div>
+  <div class="roast" id="roastBox">Roasts appear here! 😂</div>
+  <button class="primary" id="restartBtn">Restart Game 🔄</button>
+  <div class="footer">Made by Harsh Vardhan</div>
+</section>
+
 <script>
-/* JS all inline */
-let board = Array(9).fill(null); let playerName=''; let human='0'; let ai='X'; let currentTurn='0'; let mode='AI'; let boardSize='medium'; let scores={wins:0,losses:0,draws:0};
-const roastMove=["😂 {name}, kahan ghum raha tha? 🧭","😜 {name}, opponent ka dil tez ho gaya 😅","🔥 {name}, board bole nahi bhai","🍟 {name}, plan fry ho gaya 🍗","🤡 {name}, tutorial skip?","💫 {name}, thoda soch ke maar 📸"];
-const roastAIMove=["🤖 AI: 'Bhai, {name} ko maaf karenge? Nah.'","💀 AI: 'Theory padh lena next time.'","😈 AI: 'Tera move meme ban gaya.'","🏆 AI: '{name}, sabak seekh 🍪'","😵 {name}, time out?'"];
-const roastWin=["🏆 Wah {name}! Champion 📸","🎉 {name}, king ban gaya 🍽️","🕺 {name}, moves itne clean!","😎 {name}, legend unlocked"];
-const roastLose=["😭 Arre {name}, aaj nahi tha 🌤️","🍕 {name}, pizza le le 🍕","😅 {name}, thoda practice","💤 {name}, strategy so rahi thi ☕"];
-const roastDraw=["🤝 Tie! {name}, intelligent 😄","🪢 Stalemate — {name} 😄","😶‍🌫️ Match equal {name}"];
-function pickRandom(pool,name){return pool[Math.floor(Math.random()*pool.length)].replace('{name}',name||'Player');}
-const gridEl=document.getElementById('grid'); const roastBox=document.getElementById('roastBox'); const modal=document.getElementById('modal'); const nameInput=document.getElementById('nameInput'); const newBtn=document.getElementById('newBtn');
-function makeCells(){gridEl.innerHTML='';for(let i=0;i<9;i++){const c=document.createElement('div');c.className='cell';c.dataset.i=i;c.addEventListener('click',()=>cellClicked(i));gridEl.appendChild(c);}}
-makeCells();
-function render(){for(let i=0;i<9;i++){gridEl.children[i].textContent=board[i]||'';gridEl.children[i].classList.remove('flash-win','flash-lose');}}
+/* ---------- Variables ---------- */
+let playerName='';
+let mode='AI';
+let difficulty='easy';
+let human='0';
+let ai='X';
+let currentTurn='0';
+let boardSize='medium';
+let scores={wins:0,losses:0,draws:0};
+let board=Array(9).fill(null);
+
+const welcomeScreen=document.getElementById('welcomeScreen');
+const settingsScreen=document.getElementById('settingsScreen');
+const gameScreen=document.getElementById('gameScreen');
+const nameInput=document.getElementById('nameInput');
+const startBtn=document.getElementById('startBtn');
+const settingsNext=document.getElementById('settingsNext');
+const restartBtn=document.getElementById('restartBtn');
+const gridEl=document.getElementById('grid');
+const roastBox=document.getElementById('roastBox');
+const playerLabel=document.getElementById('playerLabel');
+const winsEl=document.getElementById('wins');
+const lossesEl=document.getElementById('losses');
+const drawsEl=document.getElementById('draws');
+
+/* ---------- Roast Messages ---------- */
+const roastMove=[
+  "😂 {name}, kahan ghum raha tha? 🧭",
+  "😜 {name}, move dekh ke opponent ka dil tez ho gaya! 😅",
+  "🔥 {name} ne drama kiya, board bole — 'nahi bhai'.",
+  "🍟 {name}, plan fry ho gaya — crispy fail! 🍗",
+  "🤡 {name}, tutorial skip kar diya lagta!"
+];
+const roastAIMove=[
+  "🤖 AI: 'Bhai, {name} ko maaf karenge kya? Nah.'",
+  "💀 AI: 'Next time theory bhi padh lena.'",
+  "😈 AI: 'Tera move meme ban gaya.'",
+  "🏆 AI: '{name}, sabak seekh!' 🍪"
+];
+const roastWin=["🏆 Wah {name}! Tu champion! 📸","🎉 {name}, tu king ban gaya!","🕺 {name}, moves clean!"];
+const roastLose=["😭 Arre {name}, aaj tera din nahi 😅","🍕 {name}, game haar gaya par pizza le 🍕"];
+const roastDraw=["🤝 Tie! {name}, dono intelligent 😄","🪢 Stalemate — {name}"];
+
+/* ---------- Helper Functions ---------- */
+function pickRandom(pool){ return pool[Math.floor(Math.random()*pool.length)]; }
+function showRoast(msg){ roastBox.textContent=msg.replace("{name}",playerName||'Player'); }
+
+/* ---------- Screen Navigation ---------- */
+startBtn.onclick=()=>{ 
+  playerName=nameInput.value.trim()||"Player";
+  welcomeScreen.classList.add('hide'); 
+  settingsScreen.classList.remove('hide');
+};
+settingsNext.onclick=()=>{ 
+  settingsScreen.classList.add('hide'); 
+  gameScreen.classList.remove('hide');
+  initGame();
+};
+restartBtn.onclick=()=>{ 
+  board=Array(9).fill(null); render(); showRoast("Game reset! 😎"); 
+};
+
+/* ---------- Options Selection ---------- */
+document.querySelectorAll('#modeOptions .option').forEach(o=>o.onclick=()=>{
+  mode=o.dataset.mode;
+  document.querySelectorAll('#modeOptions .option').forEach(x=>x.classList.remove('active'));
+  o.classList.add('active');
+});
+document.querySelectorAll('#diffOptions .option').forEach(o=>o.onclick=()=>{
+  difficulty=o.dataset.diff;
+  document.querySelectorAll('#diffOptions .option').forEach(x=>x.classList.remove('active'));
+  o.classList.add('active');
+});
+document.querySelectorAll('#symbolOptions .option').forEach(o=>o.onclick=()=>{
+  human=o.dataset.symbol; ai=human==='0'?'X':'0';
+  document.querySelectorAll('#symbolOptions .option').forEach(x=>x.classList.remove('active'));
+  o.classList.add('active');
+});
+document.querySelectorAll('#sizeOptions .option').forEach(o=>o.onclick=()=>{
+  boardSize=o.dataset.size;
+  document.querySelectorAll('#sizeOptions .option').forEach(x=>x.classList.remove('active'));
+  o.classList.add('active');
+});
+
+/* ---------- Game Logic ---------- */
+function initGame(){
+  playerLabel.textContent="Player: "+playerName;
+  makeCells();
+  render();
+  showRoast("Shuru karte hain, "+playerName+"! 🎮");
+  currentTurn='0';
+}
+
+function makeCells(){
+  gridEl.innerHTML='';
+  for(let i=0;i<9;i++){
+    const c=document.createElement('div');
+    c.className='cell';
+    c.dataset.i=i;
+    c.onclick=()=>cellClicked(i);
+    gridEl.appendChild(c);
+  }
+}
+
+function render(){
+  for(let i=0;i<9;i++) gridEl.children[i].textContent=board[i]||'';
+  winsEl.textContent=scores.wins;
+  lossesEl.textContent=scores.losses;
+  drawsEl.textContent=scores.draws;
+}
+
 function other(ch){return ch==='0'?'X':'0';}
-function cellClicked(i){if(board[i]||checkWinner(board))return;if(mode==='AI'){if(currentTurn!==human)return;board[i]=human;afterMove(human,false);if(!checkWinner(board)&&board.some(s=>!s)){setTimeout(()=>{aiMoveEasy();afterMove(ai,true);},400);}}else{board[i]=currentTurn;afterMove(currentTurn,false);currentTurn=other(currentTurn);showToast(pickRandom(roastMove,playerName)+' ✨');}}
-function afterMove(sym,aiDidMove){render();const msg=aiDidMove?pickRandom(roastAIMove,playerName):pickRandom(roastMove,playerName);setRoast(msg);showToast(msg);const w=checkWinner(board);if(w||board.every(Boolean))finishRound(w);else{if(mode==='AI')currentTurn=other(sym);}}
-function aiMoveEasy(){const empt=[];for(let i=0;i<9;i++)if(!board[i])empt.push(i);if(empt.length)board[empt[Math.floor(Math.random()*empt.length)]]=ai;}
-function checkWinner(bd){const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(const [a,b,c] of lines){if(bd[a]&&bd[a]===bd[b]&&bd[b]===bd[c])return bd[a];}return null;}
-function finishRound(winner){if(winner){if(mode==='AI'){if(winner===human){scores.wins++;const msg=pickRandom(roastWin,playerName)+' 🏆';setRoast(msg);showToast(msg);}else{scores.losses++;const msg=pickRandom(roastLose,playerName)+' 💀';setRoast(msg);showToast(msg);}}else{const who=winner;const msg=`${who} jeeta! ${pickRandom(roastWin,playerName)} 🎉`;setRoast(msg);showToast(msg);}}else{scores.draws++;const msg=pickRandom(roastDraw,playerName)+' 🤝';setRoast(msg);showToast(msg);}board=Array(9).fill(null);currentTurn='0';setTimeout(render,800);}
-function setRoast(txt){roastBox.textContent=txt;}
-function showToast(txt,dur=1800){const toast=document.getElementById('toast');toast.textContent=txt;toast.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>{toast.style.display='none';},dur);}
-newBtn.addEventListener('click',()=>{modal.style.display='flex';});
-document.getElementById('pickZero').addEventListener('click',()=>chooseSide('0'));
-document.getElementById('pickX').addEventListener('click',()=>chooseSide('X'));
-nameInput.addEventListener('keydown',(e)=>{if(e.key==='Enter')chooseSide(Math.random()>0.5?'0':'X');});
-function chooseSide(side){playerName=(nameInput.value||'Player').trim();human=side;ai=other(human);currentTurn='0';modal.style.display='none';setRoast(`Shuru karte hain, ${playerName}! Tu ${human} hai 🎮`);render();}
+
+function cellClicked(i){
+  if(board[i]||checkWinner(board)) return;
+  if(mode==='AI'){
+    if(currentTurn!==human) return;
+    board[i]=human; afterMove(false);
+    if(!checkWinner(board)&&board.some(s=>!s)){
+      setTimeout(()=>{ aiMove(); afterMove(true); }, 400+Math.random()*400);
+    }
+  } else{
+    board[i]=currentTurn; afterMove(false); currentTurn=other(currentTurn);
+  }
+}
+
+function afterMove(aiDid){
+  render();
+  if(aiDid) showRoast(pickRandom(roastAIMove));
+  else showRoast(pickRandom(roastMove));
+  const w=checkWinner(board);
+  if(w||board.every(Boolean)) finishRound(w);
+  else if(mode==='AI') currentTurn=other(currentTurn);
+}
+
+function aiMove(){
+  const empty=[];
+  for(let i=0;i<9;i++) if(!board[i]) empty.push(i);
+  if(empty.length) board[empty[Math.floor(Math.random()*empty.length)]]=ai;
+}
+
+function checkWinner(bd){
+  const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for(const [a,b,c] of lines) if(bd[a]&&bd[a]===bd[b]&&bd[b]===bd[c]) return bd[a];
+  return null;
+}
+
+function finishRound(w){
+  if(w){
+    if(mode==='AI'){
+      if(w===human){scores.wins++; showRoast(pickRandom(roastWin));}
+      else{scores.losses++; showRoast(pickRandom(roastLose));}
+    } else{showRoast(w+" jeeta! "+pickRandom(roastWin));}
+  } else{scores.draws++; showRoast(pickRandom(roastDraw));}
+  render();
+  setTimeout(()=>{board=Array(9).fill(null); render(); currentTurn='0';},1500);
+}
 </script>
 </body>
 </html>
