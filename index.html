@@ -7,23 +7,41 @@
 <style>
 body{margin:0;font-family:sans-serif;background:#071026;color:#e6eef8;display:flex;justify-content:center;align-items:center;height:100vh;}
 .container{display:flex;flex-direction:column;align-items:center;}
-h1{color:#7c3aed;text-shadow:0 0 8px #7c3aed,0 0 16px #06b6d4;}
-#grid{display:grid;grid-template-columns:repeat(3,100px);gap:10px;margin:20px 0;}
-.cell{width:100px;height:100px;background:rgba(255,255,255,0.05);display:flex;justify-content:center;align-items:center;font-size:48px;font-weight:800;border-radius:12px;cursor:pointer;transition:0.2s;}
-.cell:hover{transform:scale(1.1);}
-#roast{min-height:50px;text-align:center;margin-bottom:10px;}
-button{padding:10px 20px;background:linear-gradient(90deg,#7c3aed,#06b6d4);border:none;color:#fff;font-weight:700;border-radius:12px;cursor:pointer;transition:0.2s;}
+h1{color:#7c3aed;text-shadow:0 0 8px #7c3aed,0 0 16px #06b6d4;margin-bottom:12px;}
+.screen{display:flex;flex-direction:column;align-items:center;}
+input{padding:8px 12px;border-radius:10px;border:none;margin:5px;width:160px;text-align:center;}
+button{padding:10px 20px;background:linear-gradient(90deg,#7c3aed,#06b6d4);border:none;color:#fff;font-weight:700;border-radius:12px;cursor:pointer;transition:0.2s;margin-top:10px;}
 button:hover{transform:scale(1.05);}
+#grid{display:grid;grid-template-columns:repeat(3,100px);gap:12px;margin:20px 0;}
+.cell{width:100px;height:100px;background:rgba(255,255,255,0.05);display:flex;justify-content:center;align-items:center;font-size:48px;font-weight:800;border-radius:12px;cursor:pointer;transition:all 0.2s;}
+.cell:hover{transform:scale(1.1);box-shadow:0 0 12px #7c3aed;}
+.cell.x{color:#ff5c7c;text-shadow:0 0 8px #ff5c7c;}
+.cell.o{color:#56e6ff;text-shadow:0 0 8px #56e6ff;}
+.cell.win{animation:glow 1s ease-in-out infinite;}
+@keyframes glow{0%,100%{box-shadow:0 0 12px #fff;}50%{box-shadow:0 0 24px #ff0;}}
+#roast{min-height:50px;text-align:center;margin-bottom:10px;font-weight:700;}
 .footer{margin-top:12px;color:#98a4b3;font-size:12px;}
 </style>
 </head>
 <body>
 <div class="container">
+
+<div id="startScreen" class="screen">
 <h1>0x BATTLE 👾</h1>
-<div>
-<label><input type="radio" name="mode" value="AI" checked> AI</label>
-<label style="margin-left:15px;"><input type="radio" name="mode" value="FRIEND"> Friend</label>
+<label>Mode: 
+<select id="modeSelect">
+<option value="AI">AI</option>
+<option value="FRIEND">Friend</option>
+</select>
+</label>
+<div id="nameInputs">
+<input type="text" id="player1" placeholder="Your Name">
 </div>
+<button id="startBtn">Start Game 🚀</button>
+</div>
+
+<div id="gameScreen" class="screen" style="display:none;">
+<h1>0x BATTLE 👾</h1>
 <div id="grid"></div>
 <div id="roast">Shuru karte hain! 🎮</div>
 <button id="resetBtn">Restart Game 🔄</button>
@@ -31,78 +49,124 @@ button:hover{transform:scale(1.05);}
 </div>
 
 <script>
+const startScreen=document.getElementById('startScreen');
+const gameScreen=document.getElementById('gameScreen');
+const modeSelect=document.getElementById('modeSelect');
+const nameInputs=document.getElementById('nameInputs');
+const player1Input=document.getElementById('player1');
+const startBtn=document.getElementById('startBtn');
 const grid=document.getElementById('grid');
 const roast=document.getElementById('roast');
 const resetBtn=document.getElementById('resetBtn');
+
 let board=Array(9).fill(null);
 let turn='X';
 let mode='AI';
+let playerNames={X:'Player', O:'AI'};
+const roastMsgs=["😂 {name}, kya move!","😜 {name}, next time better!","🔥 {name}, plan fail!","🤡 {name}, tutorial skip!"];
 
-const roastMsgs=["😂 Kya move kiya yaar!","😜 Hahaha, next time better!","🔥 Tera plan fail!","🤡 Tutorial skip kiya lagta!"];
+modeSelect.onchange=()=>{
+    mode=modeSelect.value;
+    nameInputs.innerHTML='';
+    if(mode==='AI'){
+        nameInputs.innerHTML='<input type="text" id="player1" placeholder="Your Name">';
+    } else {
+        nameInputs.innerHTML='<input type="text" id="playerX" placeholder="X Player Name"><input type="text" id="playerO" placeholder="O Player Name">';
+    }
+};
 
-function pickRandom(){ return roastMsgs[Math.floor(Math.random()*roastMsgs.length)]; }
+function pickRandom(name){return roastMsgs[Math.floor(Math.random()*roastMsgs.length)].replace('{name}',name);}
 
 function render(){
-  grid.innerHTML='';
-  board.forEach((v,i)=>{
-    const cell=document.createElement('div');
-    cell.className='cell';
-    cell.textContent=v||'';
-    cell.onclick=()=>clickCell(i);
-    grid.appendChild(cell);
-  });
+    grid.innerHTML='';
+    board.forEach((v,i)=>{
+        const cell=document.createElement('div');
+        cell.className='cell';
+        if(v)cell.classList.add(v==='X'?'x':'o');
+        cell.textContent=v||'';
+        cell.onclick=()=>clickCell(i);
+        grid.appendChild(cell);
+    });
 }
 
 function clickCell(i){
-  if(board[i]) return;
-  board[i]=turn;
-  roast.textContent=pickRandom();
-  if(checkWin()){
-    roast.textContent=turn+' jeet gaya! 🎉';
-    setTimeout(()=>resetBoard(),1500);
-    return;
-  }
-  if(board.every(Boolean)){
-    roast.textContent='Draw! 🤝';
-    setTimeout(()=>resetBoard(),1500);
-    return;
-  }
-  turn=turn==='X'?'O':'X';
-  if(mode==='AI' && turn==='O'){
-    aiMove();
-  }
-  render();
+    if(board[i])return;
+    board[i]=turn;
+    roast.textContent=pickRandom(playerNames[turn]);
+    if(checkWin()){
+        highlightWin();
+        roast.textContent=playerNames[turn]+' jeet gaya! 🎉';
+        setTimeout(resetBoard,1500);
+        return;
+    }
+    if(board.every(Boolean)){
+        roast.textContent='Draw! 🤝';
+        setTimeout(resetBoard,1500);
+        return;
+    }
+    turn=turn==='X'?'O':'X';
+    if(mode==='AI' && turn==='O') setTimeout(aiMove,300);
+    render();
 }
 
 function aiMove(){
-  const empty=board.map((v,i)=>v?null:i).filter(v=>v!==null);
-  const choice=empty[Math.floor(Math.random()*empty.length)];
-  board[choice]='O';
-  roast.textContent=pickRandom();
-  if(checkWin()){
-    roast.textContent='O (AI) jeet gaya! 🤖';
-    setTimeout(()=>resetBoard(),1500);
-  }
-  else if(board.every(Boolean)){
-    roast.textContent='Draw! 🤝';
-    setTimeout(()=>resetBoard(),1500);
-  }
-  else turn='X';
+    const empty=board.map((v,i)=>v?null:i).filter(v=>v!==null);
+    const choice=empty[Math.floor(Math.random()*empty.length)];
+    board[choice]='O';
+    roast.textContent=pickRandom(playerNames['O']);
+    if(checkWin()){
+        highlightWin();
+        roast.textContent=playerNames['O']+' (AI) jeet gaya! 🤖';
+        setTimeout(resetBoard,1500);
+        return;
+    }
+    if(board.every(Boolean)){
+        roast.textContent='Draw! 🤝';
+        setTimeout(resetBoard,1500);
+        return;
+    }
+    turn='X';
+    render();
 }
 
+const winLines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
 function checkWin(){
-  const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  return lines.some(([a,b,c])=>board[a]&&board[a]===board[b]&&board[a]===board[c]);
+    return winLines.some(([a,b,c])=>board[a]&&board[a]===board[b]&&board[a]===board[c]);
+}
+
+function highlightWin(){
+    winLines.forEach(([a,b,c])=>{
+        if(board[a]&&board[a]===board[b]&&board[a]===board[c]){
+            [a,b,c].forEach(i=>grid.children[i].classList.add('win'));
+        }
+    });
 }
 
 function resetBoard(){
-  board=Array(9).fill(null);
-  turn='X';
-  render();
+    board=Array(9).fill(null);
+    turn='X';
+    render();
 }
 
-document.querySelectorAll('input[name="mode"]').forEach(r=>r.onchange=()=>{mode=r.value; resetBoard();});
+startBtn.onclick=()=>{
+    if(mode==='AI'){
+        const n1=document.getElementById('player1').value.trim();
+        playerNames.X=n1||'Player';
+        playerNames.O='AI';
+    } else{
+        const nX=document.getElementById('playerX').value.trim();
+        const nO=document.getElementById('playerO').value.trim();
+        playerNames.X=nX||'X Player';
+        playerNames.O=nO||'O Player';
+    }
+    startScreen.style.display='none';
+    gameScreen.style.display='flex';
+    resetBoard();
+};
+
 resetBtn.onclick=resetBoard;
+
 render();
 </script>
 </body>
