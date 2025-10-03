@@ -1,38 +1,528 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="hi">
 <head>
-  <title>Gun Game</title>
-  <style>
-    body {
-      text-align:center; 
-      background:#111; 
-      color:white; 
-      font-family:sans-serif;
-    }
-    canvas { 
-      background: #222; 
-      display: block; 
-      margin: 0 auto; 
-      border:2px solid white;
-    }
-    #ui {
-      margin-bottom: 10px;
-    }
-    button { 
-      padding:10px 20px; 
-      font-size:16px; 
-      cursor:pointer;
-      margin-top:5px;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>0x BATTLE — AI & Friend Mode — Made by Harsh Vardhan</title>
+<style>
+  :root{
+    --bg:#071026; --card:#07182a; --accent1:#7c3aed; --accent2:#06b6d4;
+    --glass: rgba(255,255,255,0.03);
+    --muted:#98a4b3; --text:#e6eef8;
+  }
+  *{box-sizing:border-box;font-family: 'Segoe UI', Roboto, system-ui, sans-serif}
+  html,body{height:100%;margin:0;background:
+    radial-gradient(700px 300px at 10% 10%, rgba(124,58,237,0.09), transparent),
+    radial-gradient(600px 300px at 90% 90%, rgba(6,182,212,0.05), transparent),
+    var(--bg); color:var(--text);}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px}
+  .card{width:1050px;max-width:100%;border-radius:16px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));box-shadow:0 10px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;box-shadow:0 8px 22px rgba(124,58,237,0.12)}
+  h1{margin:0;font-size:20px}
+  .controls{display:flex;gap:10px;align-items:center}
+  .btn{padding:8px 12px;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);cursor:pointer;color:inherit}
+  .btn.primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#021124;font-weight:700;border:none}
+  .layout{display:flex;gap:18px;flex-wrap:wrap}
+  .left{flex:1;min-width:320px}
+  .right{width:360px;max-width:100%}
+  .grid{display:grid;gap:10px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));justify-items:stretch}
+  /* sizes controlled by data-size attr on .grid */
+  .grid[data-size="small"]{grid-template-columns:repeat(3,1fr);font-size:46px}
+  .grid[data-size="medium"]{grid-template-columns:repeat(3,1fr);font-size:56px}
+  .grid[data-size="large"]{grid-template-columns:repeat(3,1fr);font-size:72px}
+  .cell{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(0,0,0,0.12));cursor:pointer;user-select:none;transition:transform .12s, box-shadow .12s; font-weight:800}
+  .cell:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(2,6,23,0.45)}
+  .info{padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.05))}
+  .small{font-size:13px;color:var(--muted)}
+  .player-name{font-weight:800;font-size:18px}
+  .score{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .score .k{background:rgba(255,255,255,0.02);padding:8px 10px;border-radius:8px}
+  .roast{padding:12px;margin-top:12px;border-radius:10px;background:linear-gradient(90deg, rgba(0,0,0,0.2), rgba(255,255,255,0.01));font-weight:700;min-height:56px}
+  .hint{margin-top:10px;color:var(--muted);font-size:13px}
+  .footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+  .modal-overlay{position:fixed;inset:0;background:linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.8));display:flex;align-items:center;justify-content:center;z-index:50}
+  .modal{width:520px;max-width:96%;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;text-align:center}
+  .input{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:10px}
+  .controls-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}
+  .pill{padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);cursor:pointer}
+  .active{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#021124;border:none;font-weight:800}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:rgba(0,0,0,0.6);padding:12px 18px;border-radius:12px;z-index:60;font-weight:800}
+  .flash-win{box-shadow:0 0 18px rgba(22,163,74,0.35);transform:translateY(-8px) scale(1.02)}
+  .flash-lose{box-shadow:0 0 18px rgba(239,68,68,0.25);transform:translateY(-6px) scale(.995)}
+  footer.copy{margin-top:14px;text-align:center;color:var(--muted);font-size:12px}
+  @media (max-width:900px){ .card{padding:12px} .logo{width:48px;height:48px} }
+</style>
 </head>
 <body>
-<h1>🔥 Gun Shooter Game 🔥</h1>
-<div id="ui">
-  <h3 id="score">Score: 0</h3>
-  <button id="restartBtn" onclick="restartGame()">Restart Game</button>
+<div class="wrap">
+  <div class="card" id="app">
+    <div class="top">
+      <div class="brand">
+        <div class="logo">0x</div>
+        <div>
+          <h1>0x BATTLE — AI & Friend Mode 😂🔥</h1>
+          <div class="small">Harsh Vardhan ka fancy tic-tac-toe — har move pe roast! 🍗</div>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn" id="newBtn">🎯 New</button>
+        <button class="btn" id="resetBtn">♻️ Reset Scores</button>
+        <button class="btn primary" id="shareBtn">📤 Push to GitHub</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="left">
+        <div class="grid" id="grid" data-size="medium" aria-label="Game board">
+          <!-- cells created by JS -->
+        </div>
+        <div class="footer">
+          <div>Made by <strong>Harsh Vardhan</strong></div>
+          <div class="small">Repo pe seedha deploy kar: index.html push karo</div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="info">
+          <div class="player-name" id="playerName">Player: —</div>
+          <div class="small">Mode: <span id="modeLabel">—</span></div>
+          <div class="small">You are: <strong id="youAre">—</strong> <span id="turnEmoji">😎</span></div>
+          <div class="score" id="scoreBox">
+            <div class="k">Wins: <span id="wins">0</span></div>
+            <div class="k">Losses: <span id="losses">0</span></div>
+            <div class="k">Draws: <span id="draws">0</span></div>
+          </div>
+
+          <div class="small" style="margin-top:8px">Choose mode & difficulty / size below:</div>
+          <div class="controls-row" style="margin-top:8px">
+            <div class="pill active" id="modeAi">🤖 AI</div>
+            <div class="pill" id="modeFriend">👫 Friend</div>
+          </div>
+
+          <div class="small" style="margin-top:10px">Difficulty:</div>
+          <div class="controls-row">
+            <div class="pill active" id="diffEasy">Easy</div>
+            <div class="pill" id="diffMed">Medium</div>
+            <div class="pill" id="diffHard">Hard</div>
+          </div>
+
+          <div class="small" style="margin-top:10px">Board size:</div>
+          <div class="controls-row">
+            <div class="pill" id="sizeSmall">Small</div>
+            <div class="pill active" id="sizeMed">Medium</div>
+            <div class="pill" id="sizeLarge">Large</div>
+          </div>
+
+          <div class="roast" id="roastBox">Roasts will appear here — har move ke baad naya roast! 😂</div>
+          <div class="hint">Tip: Tap a square or press 1-9. New → change name / side. Friend mode: alternate turns.</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-<canvas id="gameCanvas" width="600" height="400"></canvas>
-<script src="game.js"></script>
+
+<!-- modal for name & side -->
+<div id="modal" class="modal-overlay">
+  <div class="modal">
+    <h2>Welcome to 0x BATTLE! 👋</h2>
+    <div class="small">Apna naam daal aur side choose kar — AI friendly ya Friend mode dono hain.</div>
+    <input id="nameInput" class="input" placeholder="Apna zabardast naam likh..." maxlength="24" />
+    <div class="controls-row" style="margin-top:12px">
+      <button class="btn pill" id="pickZero">I choose 0 (०) 0️⃣</button>
+      <button class="btn pill" id="pickX">I choose X (❌)</button>
+    </div>
+    <div class="small" style="margin-top:8px">Enter dabao to auto assign ya pick side upar se.</div>
+  </div>
+</div>
+
+<!-- toast -->
+<div id="toast" class="toast" style="display:none"></div>
+
+<script>
+/* 0x BATTLE — AI (Easy/Medium/Hard) + Friend mode
+   Features:
+   - 2 modes: AI and Friend (local)
+   - 3 difficulties: Easy(random), Medium(heuristic), Hard(minimax)
+   - 3 UI sizes: small/medium/large (cell size)
+   - Every move shows a funny Hindi roast (emoji-rich)
+   - Scores saved in localStorage
+   - Single-file GitHub ready
+*/
+
+/* ---------- Roast pools (Hindi, funny, emoji) ---------- */
+const roastMove = [
+  "😂 Arre {name}, kahan ghum raha tha? Next time satnav lagana! 🧭",
+  "😜 {name}, tera move dekh ke opponent ka dil ka dhadkan tez ho gaya... aur fir thanda 😅",
+  "🔥 {name} ne drama kiya, par board bole — 'nahi bhai'.",
+  "🍟 {name}, tera plan fry ho gaya — crispy fail! 🍗",
+  "🤡 {name}, tera move dekh ke lagta hai tutorial skip kar diya tha!",
+  "💫 {name}, thoda soch ke maar — nahi toh algorithm teri photo viral karega! 📸"
+];
+const roastAIMove = [
+  "🤖 AI: 'Bhai, {name} ko maaf karenge kya? Nah.'",
+  "💀 AI ne kaha: 'Ab next time theory bhi padh lena.'",
+  "😈 AI: 'Tera move mera meme ban gaya.'",
+  "🏆 AI: '{name}, sabak seekh — aur cookies bhej!' 🍪",
+  "😵 AI: 'Lagta hai tune loading me time out kar diya.'"
+];
+const roastWin = [
+  "🏆 Wah {name}! Tu champion nikla — selfie bhej! 📸",
+  "🎉 {name}, tu toh king ban gaya. Opponent ab khana banata hai. 🍽️",
+  "🕺 {name}, moves itne clean, plumber bhi impressed ho jayega!",
+  "😎 {name}, legend status unlocked — badge: RoastMaster."
+];
+const roastLose = [
+  "😭 Arre {name}, aaj tera din nahi tha — par kal phir try kar! 🌤️",
+  "🍕 {name}, game toh haar gaya, par pizza le le — consolation milega. 🍕",
+  "😅 {name}, thoda practice aur tu pro ban jayega — abhi thoda cringe.",
+  "💤 {name}, strategy so rahi thi — jagaa use! ☕"
+];
+const roastDraw = [
+  "🤝 Tie! {name}, dono loag intelligent aur thode confused jaise.",
+  "🪢 Stalemate — {name}, board ne kaha: 'Donon ghar jao' 😄",
+  "😶‍🌫️ {name}, match equal — ab theatre me jaakar drama dekh le!"
+];
+
+function pickRandom(pool, name){ return pool[Math.floor(Math.random()*pool.length)].replace('{name}', name || 'Player'); }
+
+/* ---------- Game state ---------- */
+let board = Array(9).fill(null);
+let playerName = '';
+let mode = 'AI'; // or 'FRIEND'
+let human = '0'; // player's symbol when in AI mode; in friend mode, players alternate
+let ai = 'X';
+let currentTurn = '0';
+let difficulty = 'medium'; // easy, medium, hard
+let boardSize = 'medium'; // small, medium, large
+let scores = {wins:0, losses:0, draws:0};
+
+/* ---------- DOM refs ---------- */
+const gridEl = document.getElementById('grid');
+const roastBox = document.getElementById('roastBox');
+const playerNameEl = document.getElementById('playerName');
+const youAreEl = document.getElementById('youAre');
+const modeLabelEl = document.getElementById('modeLabel');
+const winsEl = document.getElementById('wins');
+const lossesEl = document.getElementById('losses');
+const drawsEl = document.getElementById('draws');
+const toast = document.getElementById('toast');
+
+/* ---------- UI setup ---------- */
+function makeCells(){
+  gridEl.innerHTML='';
+  for(let i=0;i<9;i++){
+    const c = document.createElement('div');
+    c.className='cell';
+    c.dataset.i = i;
+    c.addEventListener('click', ()=> cellClicked(i));
+    gridEl.appendChild(c);
+  }
+}
+makeCells();
+
+function setBoardSize(size){
+  boardSize = size;
+  gridEl.dataset.size = size;
+  // Update active pill
+  document.querySelectorAll('#sizeSmall,#sizeMed,#sizeLarge').forEach(el=>el.classList.remove('active'));
+  if(size==='small') document.getElementById('sizeSmall').classList.add('active');
+  else if(size==='medium') document.getElementById('sizeMed').classList.add('active');
+  else document.getElementById('sizeLarge').classList.add('active');
+}
+
+function setDifficulty(diff){
+  difficulty = diff;
+  document.querySelectorAll('#diffEasy,#diffMed,#diffHard').forEach(el=>el.classList.remove('active'));
+  if(diff==='easy') document.getElementById('diffEasy').classList.add('active');
+  else if(diff==='medium') document.getElementById('diffMed').classList.add('active');
+  else document.getElementById('diffHard').classList.add('active');
+}
+
+function setMode(m){
+  mode = m;
+  document.getElementById('modeAi').classList.toggle('active', m==='AI');
+  document.getElementById('modeFriend').classList.toggle('active', m==='FRIEND');
+  modeLabelEl.textContent = m==='AI' ? 'AI (single)' : 'Friend (local 2-player)';
+  // In friend mode we don't treat human/ai; currentTurn starts at 0
+  if(m==='FRIEND') { youAreEl.textContent = '0 / X'; } else { youAreEl.textContent = human; }
+}
+
+/* ---------- Render ---------- */
+function render(){
+  for(let i=0;i<9;i++){
+    const cell = gridEl.children[i];
+    cell.textContent = board[i] || '';
+    cell.classList.remove('flash-win','flash-lose');
+  }
+  playerNameEl.textContent = `Player: ${playerName || '—'}`;
+  winsEl.textContent = scores.wins;
+  lossesEl.textContent = scores.losses;
+  drawsEl.textContent = scores.draws;
+  if(mode==='AI') youAreEl.textContent = human;
+  else youAreEl.textContent = '0 / X';
+}
+
+/* ---------- Move handling ---------- */
+function other(ch){ return ch==='0' ? 'X' : '0'; }
+
+function cellClicked(i){
+  if(board[i] || checkWinner(board)) return;
+  if(mode==='AI'){
+    // only allow human to place if it's human's turn
+    if(currentTurn !== human) return;
+    board[i] = human;
+    afterMove(human, i, false);
+    // AI will move after a bit
+    if(!checkWinner(board) && board.some(s=>!s)){
+      setTimeout(()=>{
+        if(difficulty==='easy') aiMoveEasy();
+        else if(difficulty==='medium') aiMoveMedium();
+        else aiMoveHard();
+        afterMove(ai, null, true);
+      }, 450 + Math.random()*600);
+    }
+  } else {
+    // Friend mode: place currentTurn and switch
+    board[i] = currentTurn;
+    afterMove(currentTurn, i, false);
+    currentTurn = other(currentTurn);
+    showToast(pickRandom(roastMove, playerName) + ' ✨'); // roast after human move in friend mode
+  }
+}
+
+function afterMove(sym, index, aiDidMove){
+  render();
+  // roast specific to the move
+  if(aiDidMove){
+    const msg = pickRandom(roastAIMove, playerName) + ' 🤖';
+    setRoast(msg);
+    showToast(msg);
+  } else {
+    const msg = pickRandom(roastMove, playerName);
+    setRoast(msg);
+    showToast(msg);
+  }
+
+  const w = checkWinner(board);
+  if(w || board.every(Boolean)){
+    finishRound(w);
+  } else {
+    // continue
+    if(mode==='AI') currentTurn = other(sym);
+  }
+}
+
+/* ---------- AI implementations ---------- */
+function aiMoveEasy(){
+  const empt = [];
+  for(let i=0;i<9;i++) if(!board[i]) empt.push(i);
+  if(empt.length) board[empt[Math.floor(Math.random()*empt.length)]] = ai;
+}
+function aiMoveMedium(){
+  // heuristic: win > block > center > corner > edge
+  // try win
+  for(let i=0;i<9;i++) if(!board[i]){ board[i]=ai; if(checkWinner(board)===ai) return; board[i]=null; }
+  // block
+  for(let i=0;i<9;i++) if(!board[i]){ board[i]=human; if(checkWinner(board)===human){ board[i]=ai; return; } board[i]=null; }
+  // center
+  if(!board[4]){ board[4]=ai; return; }
+  // corners
+  const corners=[0,2,6,8].filter(i=>!board[i]);
+  if(corners.length){ board[corners[Math.floor(Math.random()*corners.length)]]=ai; return; }
+  // edges
+  const edges=[1,3,5,7].filter(i=>!board[i]);
+  if(edges.length){ board[edges[Math.floor(Math.random()*edges.length)]]=ai; return; }
+  // fallback
+  for(let i=0;i<9;i++) if(!board[i]){ board[i]=ai; return; }
+}
+function aiMoveHard(){
+  // Minimax with pruning; returns index
+  const best = minimax(board.slice(), ai, 0, -Infinity, Infinity);
+  if(typeof best.index === 'number') board[best.index] = ai;
+}
+
+/* Minimax implementation */
+function minimax(bd, player, depth, alpha, beta){
+  const winner = checkWinner(bd);
+  if(winner === ai) return {score: 10 - depth};
+  if(winner === human) return {score: depth - 10};
+  if(bd.every(Boolean)) return {score: 0};
+
+  const empties = [];
+  for(let i=0;i<9;i++) if(!bd[i]) empties.push(i);
+
+  let bestMove = {score: player===ai ? -Infinity : Infinity, index: null};
+
+  for(const idx of empties){
+    bd[idx] = player;
+    const res = minimax(bd, other(player), depth+1, alpha, beta);
+    bd[idx] = null;
+    res.index = idx;
+
+    if(player===ai){
+      if(res.score > bestMove.score) bestMove = res;
+      alpha = Math.max(alpha, res.score);
+    } else {
+      if(res.score < bestMove.score) bestMove = res;
+      beta = Math.min(beta, res.score);
+    }
+    if(beta <= alpha) break;
+  }
+  return bestMove;
+}
+
+/* ---------- Winner & finish ---------- */
+function checkWinner(bd){
+  const lines = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+  for(const [a,b,c] of lines){
+    if(bd[a] && bd[a]===bd[b] && bd[b]===bd[c]) return bd[a];
+  }
+  return null;
+}
+
+function finishRound(winner){
+  if(winner){
+    if(mode==='AI'){
+      if(winner===human){
+        scores.wins++;
+        const msg = pickRandom(roastWin, playerName) + ' 🏆';
+        setRoast(msg);
+        showToast(msg);
+        flashBoard('win');
+      } else {
+        scores.losses++;
+        const msg = pickRandom(roastLose, playerName) + ' 💀';
+        setRoast(msg);
+        showToast(msg);
+        flashBoard('lose');
+      }
+    } else {
+      // friend mode winner either 0 or X
+      const who = winner;
+      const msg = `${who} jeeta! ${pickRandom(roastWin, playerName)} 🎉`;
+      setRoast(msg);
+      showToast(msg);
+      // don't change global wins/losses (optional) — we keep as generic: counts as win for 'Player' if matches chosen symbol
+      if(human === winner && mode==='AI') scores.wins++;
+    }
+  } else {
+    // draw
+    scores.draws++;
+    const msg = pickRandom(roastDraw, playerName) + ' 🤝';
+    setRoast(msg);
+    showToast(msg);
+  }
+  render();
+  // reset small delay then new round (keeps scores)
+  setTimeout(()=>{ board = Array(9).fill(null); currentTurn = '0'; render(); }, 1500);
+}
+
+/* ---------- UI helpers ---------- */
+function setRoast(text){ roastBox.textContent = text; }
+function showToast(text, duration=1800){
+  toast.textContent = text;
+  toast.style.display='block';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>{ toast.style.display='none'; }, duration);
+}
+function flashBoard(kind){
+  const cls = kind==='win' ? 'flash-win' : 'flash-lose';
+  for(let i=0;i<9;i++) gridEl.children[i].classList.add(cls);
+  setTimeout(()=>{ for(let i=0;i<9;i++) gridEl.children[i].classList.remove(cls); }, 900);
+}
+
+/* ---------- Controls ---------- */
+document.getElementById('modeAi').addEventListener('click', ()=> { setMode('AI'); saveSettings(); });
+document.getElementById('modeFriend').addEventListener('click', ()=> { setMode('FRIEND'); saveSettings(); });
+document.getElementById('diffEasy').addEventListener('click', ()=> { setDifficulty('easy'); saveSettings(); });
+document.getElementById('diffMed').addEventListener('click', ()=> { setDifficulty('medium'); saveSettings(); });
+document.getElementById('diffHard').addEventListener('click', ()=> { setDifficulty('hard'); saveSettings(); });
+document.getElementById('sizeSmall').addEventListener('click', ()=> setBoardSize('small'));
+document.getElementById('sizeMed').addEventListener('click', ()=> setBoardSize('medium'));
+document.getElementById('sizeLarge').addEventListener('click', ()=> setBoardSize('large'));
+
+document.getElementById('newBtn').addEventListener('click', ()=> {
+  // open modal to change name/side
+  document.getElementById('modal').style.display='flex';
+});
+document.getElementById('resetBtn').addEventListener('click', ()=> {
+  scores = {wins:0,losses:0,draws:0};
+  localStorage.removeItem('0x_settings');
+  localStorage.removeItem('0x_scores');
+  setRoast('Scores reset — ab phir se dhamaka karo! 🎯');
+  render();
+});
+document.getElementById('shareBtn').addEventListener('click', ()=> {
+  const repoTxt = `GitHub pe repo bana: index.html file add kar ke GitHub Pages enable kar de.\nRepo name suggestion: 0x-battle\nMade by Harsh Vardhan`;
+  alert(repoTxt);
+});
+
+/* ---------- Modal logic ---------- */
+const modal = document.getElementById('modal');
+const nameInput = document.getElementById('nameInput');
+document.getElementById('pickZero').addEventListener('click', ()=> chooseSide('0'));
+document.getElementById('pickX').addEventListener('click', ()=> chooseSide('X'));
+nameInput.addEventListener('keydown', (e)=> { if(e.key==='Enter') chooseSide(Math.random()>0.5 ? '0' : 'X'); });
+
+function chooseSide(side){
+  playerName = (nameInput.value || 'Player').trim();
+  human = side; ai = other(human);
+  currentTurn = '0';
+  modal.style.display='none';
+  setMode(mode); setDifficulty(difficulty); setBoardSize(boardSize);
+  // save settings & scores
+  saveSettings();
+  saveScores();
+  setRoast(`Shuru karte hain, ${playerName}! Tu ${human} hai — maza aayega! 🎮`);
+  render();
+}
+
+/* ---------- Persistence ---------- */
+function saveSettings(){
+  const obj = {playerName, mode, human, difficulty, boardSize};
+  localStorage.setItem('0x_settings', JSON.stringify(obj));
+}
+function loadSettings(){
+  try{
+    const s = JSON.parse(localStorage.getItem('0x_settings') || '{}');
+    if(s.playerName) playerName = s.playerName;
+    if(s.mode) mode = s.mode;
+    if(s.human) human = s.human;
+    if(s.difficulty) difficulty = s.difficulty;
+    if(s.boardSize) boardSize = s.boardSize;
+  }catch(e){}
+  setMode(mode); setDifficulty(difficulty); setBoardSize(boardSize);
+  if(playerName) {
+    document.getElementById('modal').style.display='none';
+    setRoast(`Welcome back, ${playerName}! Ready? ✨`);
+  } else {
+    document.getElementById('modal').style.display='flex';
+  }
+}
+function saveScores(){ localStorage.setItem('0x_scores', JSON.stringify(scores)); }
+function loadScores(){
+  try{ const s = JSON.parse(localStorage.getItem('0x_scores')||'{}'); if(s.wins||s.losses||s.draws) scores = s; } catch(e){}
+}
+
+/* ---------- keyboard support 1-9 ---------- */
+document.addEventListener('keydown', (e)=>{
+  const map = {'1':6,'2':7,'3':8,'4':3,'5':4,'6':5,'7':0,'8':1,'9':2};
+  if(map[e.key]) cellClicked(map[e.key]);
+});
+
+/* ---------- init ---------- */
+loadSettings();
+loadScores();
+render();
+setRoast('Enter name to start — har move pe mast roast aayega! 😈');
+
+/* also autoplay AI taunts on AI's move in single-player even if AI moves first */
+</script>
 </body>
 </html>
