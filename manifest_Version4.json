@@ -1,0 +1,13 @@
+{
+  "name": "0x Battle Hub",
+  "short_name": "BattleHub",
+  "description": "Multi-game hub by Harsh Vardhan (TicTacToe, Snake & Ladder, Dot Box).",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#141d2b",
+  "theme_color": "#141d2b",
+  "icons": [
+    { "src": "icons/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "icons/icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ]
+}
