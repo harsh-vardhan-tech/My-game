@@ -2,117 +2,314 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>0x Battle Hub</title>
+<title>0x Battle Hub • Harsh Vardhan</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#141d2b">
+<meta name="description" content="0x Battle Hub - Multi Game Arena by Harsh Vardhan">
 <style>
-/* ========== CORE RESET ========== */
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
-html,body{height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;}
-body{background:radial-gradient(circle at 60% 40%,#141d2b 55%,#4a1670);color:#eef4ff;display:flex;justify-content:center;}
-/* ========== LAYOUT WRAPPER ========== */
-.app{width:100%;max-width:560px;min-height:100vh;display:flex;flex-direction:column;padding:14px 14px 28px;}
-/* HEADER */
-.header{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.07);backdrop-filter:blur(8px);padding:10px 14px;border-radius:16px;box-shadow:0 0 14px #7c3aed55;}
-.logo{font-weight:700;font-size:1.1rem;letter-spacing:.5px;background:linear-gradient(90deg,#ff5c7c,#ffbe0b);-webkit-background-clip:text;color:transparent;}
-.top-btns button{background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.05rem;width:40px;height:40px;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:600;transition:.18s;box-shadow:0 0 8px #06b6d455;}
-.top-btns button:active{transform:scale(.92);}
-.top-btns button:hover{background:linear-gradient(90deg,#7c3aed,#06b6d4);}
-.muted{opacity:.55;}
-/* FOOTER */
-.footer{text-align:center;margin-top:auto;font-size:.65rem;opacity:.55;letter-spacing:1px;padding-top:32px;}
-/* SCREEN SYSTEM */
-.screen{display:none;flex-direction:column;animation:fade .35s;}
+/* ------------ CORE RESET & TOKENS ------------ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;}
+:root{
+  --bg1:#141d2b;
+  --bg2:#4a1670;
+  --glass:rgba(255,255,255,0.08);
+  --glass2:rgba(255,255,255,0.12);
+  --grad-main:linear-gradient(90deg,#7c3aed,#06b6d4);
+  --grad-warm:linear-gradient(90deg,#ff5c7c,#ffbe0b);
+  --text:#eef4ff;
+  --accent:#ff5c7c;
+  --accent2:#56e6ff;
+  --radius-s:10px;
+  --radius-m:16px;
+  --radius-l:26px;
+  --shadow-soft:0 0 14px #7c3aed55;
+  --shadow-strong:0 0 26px #06b6d455;
+  --fast:.18s cubic-bezier(.4,0,.2,1);
+}
+body{
+  background:radial-gradient(circle at 60% 40%,var(--bg1) 55%,var(--bg2));
+  color:var(--text);
+  display:flex;
+  justify-content:center;
+  -webkit-font-smoothing:antialiased;
+  font-size:16px;
+}
+.app{width:100%;max-width:620px;min-height:100vh;display:flex;flex-direction:column;padding:14px 16px 36px;}
+
+/* ------------ HEADER ------------ */
+.header{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--glass);backdrop-filter:blur(10px);
+  padding:10px 14px;border-radius:var(--radius-m);
+  box-shadow:var(--shadow-soft);
+  animation:fadeDown .55s;
+}
+.brand{
+  font-weight:700;font-size:1rem;letter-spacing:.7px;
+  background:var(--grad-warm);-webkit-background-clip:text;color:transparent;
+  display:flex;flex-direction:column;line-height:1.15;
+}
+.brand small{font-size:.6rem;font-weight:600;opacity:.75;letter-spacing:.8px;}
+.header-btns{display:flex;gap:10px;}
+.icon-btn{
+  width:42px;height:42px;border:none;border-radius:15px;
+  background:var(--glass2);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:1.05rem;cursor:pointer;font-weight:600;transition:var(--fast);
+  box-shadow:0 0 10px #06b6d455;position:relative;overflow:hidden;
+}
+.icon-btn:hover{background:var(--grad-main);}
+.icon-btn:active{transform:scale(.9);}
+.icon-btn.muted{opacity:.55;}
+.badge-dot{
+  position:absolute;top:6px;right:8px;width:8px;height:8px;border-radius:50%;
+  background:#ffbe0b;box-shadow:0 0 6px #ffbe0b;
+}
+
+/* ------------ FOOTER ------------ */
+.footer{margin-top:auto;text-align:center;font-size:.62rem;opacity:.55;letter-spacing:.8px;padding-top:30px;}
+
+/* ------------ FLOW SCREENS ------------ */
+.screen{display:none;flex-direction:column;animation:fade .4s;}
 .screen.active{display:flex;}
-@keyframes fade{0%{opacity:0;transform:translateY(10px);}100%{opacity:1;transform:translateY(0);}}
-h2.title{font-size:1.4rem;margin:6px 0 14px;font-weight:700;letter-spacing:.5px;text-align:center;background:linear-gradient(90deg,#7c3aed,#56e6ff);-webkit-background-clip:text;color:transparent;}
-/* GAME SELECT GRID */
-.game-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;width:100%;margin-bottom:14px;}
-.game-card{background:rgba(255,255,255,.1);padding:18px 14px;border-radius:18px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;box-shadow:0 0 12px #7c3aed44;transition:.2s;position:relative;}
-.game-card .ic{font-size:2.1rem;}
-.game-card .nm{font-weight:700;font-size:.95rem;letter-spacing:.5px;}
-.game-card .ds{font-size:.7rem;opacity:.75;text-align:center;line-height:1.25;}
-.game-card.selected{outline:2px solid #56e6ff;background:linear-gradient(145deg,#2a1f40,#40265e);}
-.game-card:active{transform:scale(.94);}
-.game-card:hover{background:linear-gradient(145deg,#332852,#543079);}
-.info-small{text-align:center;font-size:.7rem;opacity:.6;margin-top:2px;}
-/* MODE BUTTONS */
+h2.title{
+  font-size:1.35rem;margin:4px 0 16px;font-weight:700;letter-spacing:.5px;
+  background:linear-gradient(90deg,#7c3aed,#56e6ff);-webkit-background-clip:text;color:transparent;
+  text-align:center;
+}
+
+/* ------------ GAME SELECT ------------ */
+.game-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));
+  gap:14px;width:100%;margin-bottom:14px;
+}
+.game-card{
+  background:var(--glass2);padding:18px 14px;border-radius:20px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  cursor:pointer;box-shadow:0 0 14px #7c3aed44;transition:var(--fast);position:relative;
+}
+.game-card .ic{font-size:2.1rem;filter:drop-shadow(0 0 4px #000);}
+.game-card .nm{font-weight:700;font-size:.92rem;letter-spacing:.6px;}
+.game-card .ds{font-size:.7rem;opacity:.7;text-align:center;line-height:1.2;}
+.game-card:hover{background:linear-gradient(145deg,#2d2145,#483166);}
+.game-card:active{transform:scale(.92);}
+.game-card.selected{outline:2px solid var(--accent2);background:linear-gradient(145deg,#322650,#543579);}
+
+/* ------------ MODE ------------ */
 .mode-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:8px;}
-.mode-btn{flex:1;min-width:140px;background:linear-gradient(90deg,#7c3aed,#06b6d4);color:#fff;border:none;padding:14px 10px;border-radius:16px;font-weight:700;letter-spacing:.5px;font-size:.9rem;cursor:pointer;box-shadow:0 0 14px #06b6d455;transition:.2s;}
-.mode-btn.selected{background:linear-gradient(90deg,#ff5c7c,#ffbe0b);box-shadow:0 0 18px #ff5c7c66;}
-.mode-btn:active{transform:scale(.92);}
-.nav-row{display:flex;gap:10px;margin-top:10px;}
-/* INPUTS */
-.name-zone{display:flex;flex-direction:column;align-items:center;gap:10px;}
-.name-zone input{width:100%;max-width:230px;background:rgba(255,255,255,.12);border:none;padding:12px 14px;border-radius:14px;color:#fff;font-weight:600;font-size:.9rem;text-align:center;box-shadow:0 0 10px #7c3aed33;outline:none;}
-.name-zone input:focus{background:rgba(255,255,255,.18);}
-.summary-box{background:rgba(255,255,255,.12);padding:16px 18px;border-radius:18px;font-size:.85rem;line-height:1.5;box-shadow:0 0 12px #06b6d455;}
-/* BUTTON BASE */
-.btn{background:linear-gradient(90deg,#ff5c7c,#ffbe0b);border:none;color:#222;font-weight:700;letter-spacing:.5px;padding:14px 22px;border-radius:16px;font-size:.9rem;cursor:pointer;box-shadow:0 0 16px #ff5c7c55;flex:1;transition:.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
-.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
-.btn:active{transform:scale(.93);}
-.btn.sec{background:linear-gradient(90deg,#7c3aed,#06b6d4);color:#fff;}
+.mode-btn{
+  flex:1;min-width:140px;background:var(--grad-main);color:#fff;border:none;
+  padding:14px 10px;border-radius:18px;font-weight:700;letter-spacing:.5px;
+  font-size:.88rem;cursor:pointer;box-shadow:0 0 16px #06b6d466;transition:var(--fast);
+}
+.mode-btn.selected{background:var(--grad-warm);box-shadow:0 0 20px #ff5c7c77;}
+.mode-btn:active{transform:scale(.9);}
+
+/* ------------ INPUTS / SUMMARY ------------ */
+.name-zone{display:flex;flex-direction:column;gap:12px;align-items:center;}
+.name-zone input{
+  width:100%;max-width:250px;background:var(--glass2);border:none;
+  padding:13px 16px;border-radius:16px;color:#fff;font-weight:600;font-size:.85rem;
+  text-align:center;box-shadow:0 0 10px #7c3aed33;outline:none;letter-spacing:.4px;
+}
+.name-zone input:focus{background:rgba(255,255,255,.16);}
+.summary-box{
+  background:var(--glass2);padding:18px 20px;border-radius:20px;
+  font-size:.83rem;line-height:1.55;box-shadow:0 0 16px #06b6d455;
+  letter-spacing:.4px;
+}
+
+/* ------------ BUTTONS ------------ */
+.btn{
+  background:var(--grad-warm);border:none;color:#222;font-weight:700;letter-spacing:.5px;
+  padding:15px 24px;border-radius:18px;font-size:.9rem;cursor:pointer;
+  box-shadow:0 0 18px #ff5c7c66;flex:1;transition:var(--fast);
+  display:flex;align-items:center;justify-content:center;gap:6px;position:relative;overflow:hidden;
+}
+.btn.sec{background:var(--grad-main);color:#fff;box-shadow:0 0 18px #06b6d455;}
+.btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none;}
+.btn:active{transform:scale(.9);}
 .btn.full{width:100%;}
-/* GAME CONTAINER */
-#gameStage{margin-top:8px;flex:1;display:none;flex-direction:column;}
+.nav-row{display:flex;gap:10px;margin-top:10px;}
+
+/* ------------ GAME STAGE ------------ */
+#gameStage{margin-top:4px;flex:1;display:none;flex-direction:column;}
 #gameStage.active{display:flex;}
-/* TIC TAC TOE */
-.tt-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:4px;}
-.tt-head{font-size:1.2rem;font-weight:700;letter-spacing:.5px;background:linear-gradient(90deg,#ff5c7c,#56e6ff);-webkit-background-clip:text;color:transparent;text-align:center;}
-.tt-players{font-size:.75rem;opacity:.7;margin-top:-4px;}
-.tt-grid{display:grid;grid-template-columns:repeat(3,90px);gap:10px;margin-top:10px;}
-@media (max-width:480px){.tt-grid{grid-template-columns:repeat(3,78px);gap:8px;}}
-.tt-cell{width:100%;aspect-ratio:1;background:rgba(255,255,255,.12);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2.3rem;font-weight:800;cursor:pointer;position:relative;transition:.18s;box-shadow:0 0 10px #7c3aed44;}
-.tt-cell:active{transform:scale(.9);}
-.tt-cell.win{background:#ffbe0b;color:#222;box-shadow:0 0 18px #ffbe0b99;transform:scale(1.08);}
-.tt-status{min-height:40px;font-size:.95rem;font-weight:600;text-align:center;padding:4px 8px;}
-.badge{display:inline-block;padding:4px 10px;border-radius:12px;background:linear-gradient(90deg,#7c3aed,#06b6d4);font-size:.65rem;letter-spacing:1px;margin-top:2px;}
-.confetti{pointer-events:none;position:fixed;inset:0;z-index:999;overflow:hidden;}
-/* TOAST */
-.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(50px);background:rgba(0,0,0,.7);color:#fff;padding:10px 16px;border-radius:14px;font-size:.75rem;font-weight:600;letter-spacing:.5px;opacity:0;transition:.35s;z-index:500;}
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-/* UTILS */
-.hidden{display:none !important;}
-.center{text-align:center;}
-.small{font-size:.7rem;opacity:.7;}
-hr{border:none;height:1px;background:linear-gradient(90deg,transparent,#ffffff33,transparent);margin:14px 0;}
+
+/* ------------ TIC TAC TOE ------------ */
+.tt-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:6px;width:100%;}
+.tt-head{font-size:1.15rem;font-weight:700;letter-spacing:.6px;background:var(--grad-warm);-webkit-background-clip:text;color:transparent;text-align:center;}
+.tt-players{font-size:.68rem;opacity:.7;margin-top:-4px;text-transform:uppercase;letter-spacing:.7px;}
+.tt-grid{display:grid;grid-template-columns:repeat(3,96px);gap:12px;margin-top:14px;}
+@media (max-width:520px){.tt-grid{grid-template-columns:repeat(3,84px);gap:10px;}}
+@media (max-width:420px){.tt-grid{grid-template-columns:repeat(3,74px);gap:8px;}}
+.tt-cell{
+  width:100%;aspect-ratio:1;background:var(--glass2);border-radius:22px;
+  display:flex;align-items:center;justify-content:center;font-size:2.4rem;
+  font-weight:800;cursor:pointer;position:relative;transition:var(--fast);
+  box-shadow:0 0 14px #7c3aed44;user-select:none;
+}
+.tt-cell:active{transform:scale(.86);}
+.tt-cell.win{background:#ffbe0b;color:#222;box-shadow:0 0 26px #ffbe0b99;transform:scale(1.08);}
+.tt-status{min-height:42px;font-size:.92rem;font-weight:600;text-align:center;padding:4px 8px;}
+
+/* ------------ TOAST / CONFETTI ------------ */
+.toast{
+  position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(50px);
+  background:rgba(0,0,0,.78);color:#fff;padding:11px 18px;border-radius:16px;
+  font-size:.72rem;font-weight:600;letter-spacing:.6px;opacity:0;transition:.4s;z-index:600;
+  box-shadow:0 0 14px #0008;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.confetti{pointer-events:none;position:fixed;inset:0;overflow:hidden;z-index:550;}
+
+/* ------------ SETTINGS PANEL ------------ */
+#settingsPanel{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:800;padding:20px;
+}
+#settingsPanel.active{display:flex;}
+.settings-box{
+  width:100%;max-width:420px;background:var(--glass2);border:1px solid rgba(255,255,255,.15);
+  border-radius:24px;padding:24px 20px 28px;box-shadow:0 0 26px #06b6d455;position:relative;
+  animation:pop .45s;
+}
+.settings-box h3{
+  margin:0 0 14px;font-size:1.05rem;font-weight:700;letter-spacing:.6px;
+  background:var(--grad-main);-webkit-background-clip:text;color:transparent;
+}
+.close-set{
+  position:absolute;top:10px;right:10px;background:var(--glass);border:none;
+  width:38px;height:38px;border-radius:14px;cursor:pointer;color:#fff;font-weight:700;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;transition:var(--fast);
+}
+.close-set:hover{background:var(--grad-warm);color:#222;}
+.setting-row{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.setting-row label{font-size:.68rem;letter-spacing:.6px;opacity:.75;font-weight:600;text-transform:uppercase;}
+.inline-flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.sound-input{
+  flex:1;background:var(--glass);border:1px solid rgba(255,255,255,.16);
+  padding:10px 12px;border-radius:14px;font-size:.7rem;color:#fff;cursor:pointer;
+}
+.test-btn{
+  background:var(--grad-main);border:none;color:#fff;font-weight:600;
+  font-size:.65rem;padding:10px 14px;border-radius:12px;cursor:pointer;
+  letter-spacing:.6px;transition:var(--fast);
+}
+.test-btn:active{transform:scale(.88);}
+.reset-btn{
+  background:var(--grad-warm);border:none;color:#222;font-weight:700;
+  padding:12px 16px;border-radius:16px;font-size:.75rem;cursor:pointer;letter-spacing:.6px;
+  box-shadow:0 0 16px #ff5c7c66;
+}
+.note-mini{font-size:.58rem;line-height:1.3;opacity:.65;letter-spacing:.5px;}
+hr.div{border:none;height:1px;background:linear-gradient(90deg,transparent,#ffffff30,transparent);margin:10px 0 14px;}
+/* ------------ DONATE MODAL ------------ */
+#donateModal{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.58);backdrop-filter:blur(6px);z-index:900;padding:22px;
+}
+#donateModal.active{display:flex;}
+.donate-box{
+  width:100%;max-width:400px;background:var(--glass2);padding:24px 22px 30px;
+  border-radius:26px;box-shadow:0 0 28px #ff5c7c55;position:relative;animation:pop .45s;
+}
+.donate-box h3{
+  margin:0 0 10px;font-size:1.05rem;font-weight:700;letter-spacing:.6px;
+  background:var(--grad-warm);-webkit-background-clip:text;color:transparent;
+}
+.close-donate{position:absolute;top:10px;right:10px;background:var(--glass);border:none;
+  width:40px;height:40px;border-radius:16px;cursor:pointer;color:#fff;font-weight:700;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;transition:var(--fast);}
+.close-donate:hover{background:var(--grad-main);}
+.amount-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.amount-btn{
+  flex:1;min-width:80px;background:var(--grad-main);border:none;color:#fff;
+  padding:10px 0;border-radius:14px;font-weight:600;font-size:.75rem;cursor:pointer;
+  letter-spacing:.5px;transition:var(--fast);box-shadow:0 0 14px #06b6d455;
+}
+.amount-btn:active{transform:scale(.9);}
+#donateAmount{
+  width:100%;background:var(--glass);border:1px solid rgba(255,255,255,.2);
+  padding:12px 14px;border-radius:16px;color:#fff;font-weight:600;letter-spacing:.6px;
+  font-size:.9rem;outline:none;text-align:center;margin-bottom:12px;
+}
+.pay-btn{
+  width:100%;background:var(--grad-warm);border:none;color:#222;font-weight:700;
+  padding:14px 16px;border-radius:18px;font-size:.9rem;cursor:pointer;letter-spacing:.6px;
+  box-shadow:0 0 20px #ff5c7c66;transition:var(--fast);
+}
+.pay-btn:active{transform:scale(.92);}
+.upi-id-box{
+  background:var(--glass);padding:10px 12px;border-radius:14px;
+  font-size:.7rem;display:flex;align-items:center;justify-content:space-between;
+  gap:8px;margin-top:10px;
+}
+.copy-btn{
+  background:var(--grad-main);border:none;color:#fff;font-weight:600;
+  padding:8px 12px;border-radius:12px;font-size:.65rem;cursor:pointer;letter-spacing:.5px;
+  transition:var(--fast);
+}
+.copy-btn:active{transform:scale(.88);}
+.donate-note{font-size:.6rem;opacity:.6;line-height:1.3;margin-top:10px;letter-spacing:.4px;text-align:center;}
+
+/* ------------ CONFETTI ANIM ------------ */
+@keyframes burst{0%{transform:translate(-50%,-50%) scale(.2) rotate(0deg);opacity:0;}60%{opacity:1;}100%{transform:translate(-50%,-50%) scale(1) rotate(360deg);opacity:0;}}
+/* ------------ MISC ANIMS ------------ */
+@keyframes fade{0%{opacity:0;transform:translateY(12px);}100%{opacity:1;transform:translateY(0);}}
+@keyframes fadeDown{0%{opacity:0;transform:translateY(-10px);}100%{opacity:1;transform:translateY(0);}}
+@keyframes pop{0%{transform:scale(.6);opacity:0;}60%{transform:scale(1.06);opacity:1;}100%{transform:scale(1);opacity:1;}}
+/* ------------ SMALL HELPERS ------------ */
+.small{text-align:center;font-size:.62rem;opacity:.65;margin-top:4px;letter-spacing:.5px;}
+.badge{display:inline-block;padding:4px 10px;border-radius:14px;background:var(--grad-main);font-size:.58rem;letter-spacing:1px;margin-top:2px;color:#fff;font-weight:700;}
+.badge-turn{display:inline-block;padding:4px 8px;border-radius:10px;background:var(--grad-warm);font-size:.55rem;letter-spacing:1px;color:#222;font-weight:700;}
+.disabled{pointer-events:none;opacity:.4;}
+/* ------------ ACCESSIBILITY FOCUS ------------ */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:6px;}
 </style>
 </head>
 <body>
 <div class="app">
   <!-- HEADER -->
   <div class="header">
-    <div class="logo">🎮 0x Battle Hub</div>
-    <div class="top-btns">
-      <button id="btnMusic" title="Music On/Off">🔊</button>
+    <div class="brand">
+      <span>🎮 0x Battle Hub</span>
+      <small>Made by Harsh Vardhan</small>
+    </div>
+    <div class="header-btns">
+      <button id="donateBtn" class="icon-btn" title="Donate / Support">💝</button>
+      <button id="settingsBtn" class="icon-btn" title="Settings / Sounds">⚙️</button>
+      <button id="musicBtn" class="icon-btn" title="Music On/Off">🔊</button>
     </div>
   </div>
 
-  <!-- SCREENS WRAPPER -->
+  <!-- FLOW SCREENS -->
   <div id="flow">
-    <!-- STEP 0: GAME SELECT -->
+    <!-- STEP 0 -->
     <div class="screen active" data-step="0" id="screenGame">
       <h2 class="title">Choose Your Game</h2>
       <div class="game-grid" id="gameGrid">
         <div class="game-card" data-game="tictac">
           <div class="ic">❌⭕</div>
-            <div class="nm">Tic Tac Toe</div>
-          <div class="ds">Mind duel + AI</div>
+          <div class="nm">Tic Tac Toe</div>
+          <div class="ds">Classic + strong AI</div>
         </div>
-        <div class="game-card disabled" style="opacity:.35;pointer-events:none;">
-          <div class="ic">🐍</div><div class="nm">Snake & Ladder</div>
-          <div class="ds">Coming next step</div>
+        <div class="game-card disabled">
+          <div class="ic">🐍</div>
+          <div class="nm">Snake & Ladder</div>
+          <div class="ds">Coming soon</div>
         </div>
-        <div class="game-card disabled" style="opacity:.35;pointer-events:none;">
-          <div class="ic">🟦</div><div class="nm">Dot Box</div>
-          <div class="ds">Coming next step</div>
+        <div class="game-card disabled">
+          <div class="ic">🟦</div>
+          <div class="nm">Dot Box</div>
+          <div class="ds">Coming soon</div>
         </div>
       </div>
       <button class="btn full" id="toMode" disabled>Next ➡️</button>
-      <div class="info-small">Step 1: Only TicTacToe active</div>
+      <div class="small">Only Tic Tac Toe active in this step</div>
     </div>
 
-    <!-- STEP 1: MODE -->
+    <!-- STEP 1 -->
     <div class="screen" data-step="1" id="screenMode">
       <h2 class="title">Select Mode</h2>
       <div class="mode-row">
@@ -120,28 +317,28 @@ hr{border:none;height:1px;background:linear-gradient(90deg,transparent,#ffffff33
         <button class="mode-btn" data-mode="friend">Play with Friend 👥</button>
       </div>
       <div class="nav-row">
-        <button class="btn sec" id="backToGame">⬅ Back</button>
+        <button class="btn sec" id="backGame">⬅ Back</button>
         <button class="btn" id="toNames" disabled>Next ➡️</button>
       </div>
-      <div class="small center" style="margin-top:6px;">AI = Strong (Perfect)</div>
+      <div class="small">AI plays perfectly – no mercy!</div>
     </div>
 
-    <!-- STEP 2: NAMES -->
+    <!-- STEP 2 -->
     <div class="screen" data-step="2" id="screenNames">
       <h2 class="title">Enter Player Name(s)</h2>
-      <div class="name-zone" id="nameZone"></div>
+      <div id="nameZone" class="name-zone"></div>
       <div class="nav-row">
-        <button class="btn sec" id="backToMode">⬅ Back</button>
+        <button class="btn sec" id="backMode">⬅ Back</button>
         <button class="btn" id="toSummary" disabled>Next ➡️</button>
       </div>
     </div>
 
-    <!-- STEP 3: SUMMARY -->
+    <!-- STEP 3 -->
     <div class="screen" data-step="3" id="screenSummary">
       <h2 class="title">Summary</h2>
       <div class="summary-box" id="summaryBox"></div>
-      <div class="nav-row" style="margin-top:14px;">
-        <button class="btn sec" id="backToNames">⬅ Back</button>
+      <div class="nav-row" style="margin-top:16px;">
+        <button class="btn sec" id="backNames">⬅ Back</button>
         <button class="btn" id="startGame">Start Game 🚀</button>
       </div>
     </div>
@@ -149,427 +346,444 @@ hr{border:none;height:1px;background:linear-gradient(90deg,transparent,#ffffff33
 
   <!-- GAME STAGE -->
   <div id="gameStage">
-    <!-- Game mounts here -->
     <div id="gameContainer"></div>
     <div class="nav-row" style="margin-top:18px;">
-      <button class="btn sec" id="backHome">⬅ Home</button>
-      <button class="btn" id="restartGame">🔄 Restart</button>
+      <button class="btn sec" id="homeBtn">⬅ Home</button>
+      <button class="btn" id="restartBtn">🔄 Restart</button>
     </div>
   </div>
 
-  <div class="footer">© 2025 0x Battle Hub • Step 1</div>
+  <div class="footer">
+    Game Platform by Harsh Vardhan • Your sounds customized stay only on your device.
+  </div>
 </div>
 
-<!-- Toast -->
+<!-- TOAST + CONFETTI -->
 <div id="toast" class="toast"></div>
-<!-- Confetti -->
 <div id="confetti" class="confetti"></div>
 
+<!-- SETTINGS PANEL -->
+<div id="settingsPanel">
+  <div class="settings-box">
+    <button class="close-set" id="closeSettings" title="Close">✖</button>
+    <h3>Settings</h3>
+    <div class="setting-row">
+      <label>Music</label>
+      <div class="inline-flex">
+        <button id="toggleMusic" class="test-btn">Toggle Music</button>
+        <button id="resetSounds" class="test-btn" style="background:var(--grad-warm);color:#222;">Reset Sounds</button>
+      </div>
+      <div class="note-mini">Music + sounds are local only. Other users won't see your changes.</div>
+    </div>
+    <hr class="div">
+    <div class="setting-row">
+      <label>Click / Tap Sound</label>
+      <div class="inline-flex">
+        <input type="file" id="sndClick" accept="audio/*" class="sound-input">
+        <button class="test-btn" data-play="click">Play</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <label>Move Sound</label>
+      <div class="inline-flex">
+        <input type="file" id="sndMove" accept="audio/*" class="sound-input">
+        <button class="test-btn" data-play="move">Play</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <label>Win Sound</label>
+      <div class="inline-flex">
+        <input type="file" id="sndWin" accept="audio/*" class="sound-input">
+        <button class="test-btn" data-play="win">Play</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <label>Background Music</label>
+      <div class="inline-flex">
+        <input type="file" id="sndBg" accept="audio/*" class="sound-input">
+        <button class="test-btn" data-play="bg">Play</button>
+      </div>
+    </div>
+    <div class="note-mini">Tip: Keep files short (under ~200KB) for smoother mobile play.</div>
+  </div>
+</div>
+
+<!-- DONATE MODAL -->
+<div id="donateModal">
+  <div class="donate-box">
+    <button class="close-donate" id="closeDonate" title="Close">✖</button>
+    <h3>Support Developer 💝</h3>
+    <p style="font-size:.72rem;line-height:1.35;opacity:.8;margin-bottom:12px;">
+      If you like this game hub, you can support by sending a small UPI donation.
+    </p>
+    <div class="amount-grid">
+      <button class="amount-btn" data-amt="19">₹19</button>
+      <button class="amount-btn" data-amt="49">₹49</button>
+      <button class="amount-btn" data-amt="99">₹99</button>
+      <button class="amount-btn" data-amt="199">₹199</button>
+    </div>
+    <input id="donateAmount" placeholder="Enter Amount (INR)">
+    <button class="pay-btn" id="payNowBtn">Pay via UPI App</button>
+    <div class="upi-id-box">
+      <span id="upiText">UPI: kk2112423@oksbi</span>
+      <button class="copy-btn" id="copyUpi">Copy</button>
+    </div>
+    <div class="donate-note">
+      Works best on Android UPI apps (Google Pay, PhonePe, Paytm, BHIM).  
+      If it doesn't open automatically, paste UPI ID manually in your app.
+    </div>
+  </div>
+</div>
+
 <script>
-/* ===============================
-   STATE
-=============================== */
-let selectedGame = '';
-let selectedMode = '';
-let player1 = '';
-let player2 = '';
-let currentStep = 0;
-
-/* ===============================
-   HELPERS
-=============================== */
-const qs = sel => document.querySelector(sel);
-const qsa = sel => [...document.querySelectorAll(sel)];
-function showStep(n){
-  currentStep = n;
-  qsa('.screen').forEach(sc=> sc.classList.toggle('active', +sc.dataset.step===n));
-  qs('#gameStage').classList.remove('active');
-  window.scrollTo({top:0,behavior:'smooth'});
+/* ================== GLOBAL STATE ================== */
+let selectedGame='', selectedMode='', player1='', player2='', currentStep=0;
+const qs=s=>document.querySelector(s), qsa=s=>[...document.querySelectorAll(s)];
+/* ================== TOAST ================== */
+function toast(msg,time=1700){
+  const t=qs('#toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), time);
 }
-function toast(msg, ms=1700){
-  const t = qs('#toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=> t.classList.remove('show'), ms);
-}
-function playClick(){ Sound.play('click'); }
-
-/* ===============================
-   SOUND MANAGER (INLINE SIMPLE)
-=============================== */
-const Sound = {
-  muted: false,
-  pool: {},
-  init(){
-    this.create('click', 180, 0.15);
-    this.create('win', 420, 0.25);
-    this.create('move', 300, 0.18);
+/* ================== SOUND MANAGER ================== */
+const SoundManager={
+  muted:false,
+  storeKey:'customSoundsV1',
+  sounds:{
+    click:{src:'assets/audio/click.mp3',audio:null},
+    move:{src:'assets/audio/move.mp3',audio:null},
+    win:{src:'assets/audio/win.mp3',audio:null},
+    bg:{src:'assets/audio/bg.mp3',audio:null,loop:true}
   },
-  create(name, freq, gain=0.2){
-    this.pool[name] = {freq,gain};
+  load(){
+    const saved=localStorage.getItem(this.storeKey);
+    if(saved){
+      try{
+        const data=JSON.parse(saved);
+        for(const k in data){
+          if(this.sounds[k] && data[k]) this.sounds[k].src=data[k];
+        }
+      }catch(e){}
+    }
+    for(const k in this.sounds){
+      const a=new Audio();
+      a.src=this.sounds[k].src;
+      if(this.sounds[k].loop) a.loop=true;
+      this.sounds[k].audio=a;
+    }
   },
   play(name){
     if(this.muted) return;
-    if(!this.pool[name]) return;
-    const ctx = this._ctx || (this._ctx = new (window.AudioContext||window.webkitAudioContext)());
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type = name==='win'?'triangle':'sine';
-    o.frequency.value = this.pool[name].freq;
-    g.gain.value = this.pool[name].gain;
-    o.connect(g); g.connect(ctx.destination);
-    o.start();
-    o.stop(ctx.currentTime + 0.18);
+    const s=this.sounds[name];
+    if(!s||!s.audio) return;
+    if(name==='bg'){
+      if(s.audio.paused){ s.audio.currentTime=0; s.audio.play().catch(()=>{}); }
+    }else{
+      try{
+        s.audio.currentTime=0;
+        s.audio.play().catch(()=>{});
+      }catch(e){}
+    }
+  },
+  stop(name){
+    const s=this.sounds[name];
+    if(s && s.audio) s.audio.pause();
+  },
+  stopAll(){for(const k in this.sounds) this.stop(k);},
+  toggleMute(btn){
+    this.muted=!this.muted;
+    if(this.muted){
+      this.stop('bg'); btn.classList.add('muted'); btn.textContent='🔇';
+    }else{
+      btn.classList.remove('muted'); btn.textContent='🔊'; this.play('bg');
+    }
+  },
+  setCustom(name, file){
+    const reader=new FileReader();
+    reader.onload=()=>{
+      this.sounds[name].src=reader.result;
+      this.sounds[name].audio.src=reader.result;
+      this.persist();
+      toast(name+' sound set');
+    };
+    reader.readAsDataURL(file);
+  },
+  persist(){
+    const data={};
+    for(const k in this.sounds) data[k]=this.sounds[k].src;
+    localStorage.setItem(this.storeKey, JSON.stringify(data));
+  },
+  reset(){
+    localStorage.removeItem(this.storeKey);
+    this.stopAll();
+    location.reload();
   }
 };
-Sound.init();
-
-/* MUSIC (SIMPLE LOOP TONE) – placeholder */
-let musicCtx, musicOsc, musicGain;
-function startMusic(){
-  if(Sound.muted) return;
-  if(musicOsc) return;
-  musicCtx = musicCtx || new (window.AudioContext||window.webkitAudioContext)();
-  musicOsc = musicCtx.createOscillator();
-  musicGain = musicCtx.createGain();
-  musicOsc.type='sawtooth';
-  musicOsc.frequency.value=110;
-  musicGain.gain.value=0.05;
-  musicOsc.connect(musicGain); musicGain.connect(musicCtx.destination);
-  musicOsc.start();
-}
-function stopMusic(){
-  if(musicOsc){
-    musicOsc.stop();
-    musicOsc.disconnect();
-    musicOsc=null;
+SoundManager.load();
+/* ================== CONFETTI ================== */
+function confettiBurst(draw=false){
+  const c=qs('#confetti'); c.innerHTML='';
+  const total=draw?20:36;
+  for(let i=0;i<total;i++){
+    const sp=document.createElement('span');
+    sp.textContent=draw?'🤝':'🎉';
+    const size=Math.random()*20+18;
+    sp.style.cssText=`
+      position:absolute;
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      font-size:${size}px;
+      transform:translate(-50%,-50%) scale(.2);
+      animation:burst .9s cubic-bezier(.34,1.6,.64,1) ${Math.random()*0.5}s both;
+    `;
+    c.appendChild(sp);
   }
 }
-
-/* ===============================
-   FLOW ELEMENTS
-=============================== */
-const gameGrid = qs('#gameGrid');
-const toModeBtn = qs('#toMode');
-const toNamesBtn = qs('#toNames');
-const toSummaryBtn = qs('#toSummary');
-const startBtn = qs('#startGame');
-const summaryBox = qs('#summaryBox');
-
-gameGrid.addEventListener('click', e=>{
-  const card = e.target.closest('.game-card');
+/* ================== FLOW HELPERS ================== */
+function showStep(n){
+  currentStep=n;
+  qsa('.screen').forEach(sc=>sc.classList.toggle('active', +sc.dataset.step===n));
+  qs('#gameStage').classList.remove('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function resetFlow(){
+  selectedGame='';selectedMode='';player1='';player2='';
+  qs('#toMode').disabled=true; qs('#toNames').disabled=true; qs('#toSummary').disabled=true;
+  qsa('.game-card').forEach(c=>c.classList.remove('selected'));
+  qsa('.mode-btn').forEach(c=>c.classList.remove('selected'));
+  showStep(0); qs('#gameContainer').innerHTML='';
+  SoundManager.play('bg');
+}
+function gameName(id){return {tictac:'Tic Tac Toe','snake':'Snake & Ladder','dotbox':'Dot Box'}[id]||id;}
+/* ================== SETUP EVENTS ================== */
+const gameGrid=qs('#gameGrid');
+gameGrid.addEventListener('click',e=>{
+  const card=e.target.closest('.game-card');
   if(!card || card.classList.contains('disabled')) return;
   qsa('.game-card').forEach(c=>c.classList.remove('selected'));
   card.classList.add('selected');
-  selectedGame = card.dataset.game;
-  toModeBtn.disabled = !selectedGame;
-  playClick();
+  selectedGame=card.dataset.game; qs('#toMode').disabled=false;
+  SoundManager.play('click');
 });
-
-toModeBtn.addEventListener('click', ()=>{
-  if(!selectedGame) return;
-  playClick();
-  showStep(1);
+qs('#toMode').onclick=()=>{if(!selectedGame)return;SoundManager.play('click');showStep(1);};
+qs('#backGame').onclick=()=>{SoundManager.play('click');showStep(0);};
+qsa('.mode-btn').forEach(b=>{
+  b.onclick=()=>{
+    qsa('.mode-btn').forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected'); selectedMode=b.dataset.mode;
+    qs('#toNames').disabled=false; SoundManager.play('click');
+  };
 });
-qs('#backToGame').onclick = ()=>{ playClick(); showStep(0); };
-
-qsa('.mode-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    qsa('.mode-btn').forEach(b=>b.classList.remove('selected'));
-    btn.classList.add('selected');
-    selectedMode = btn.dataset.mode;
-    toNamesBtn.disabled=false;
-    playClick();
-  });
-});
-toNamesBtn.onclick = ()=> { if(!selectedMode)return; playClick(); buildNameInputs(); showStep(2); };
-qs('#backToMode').onclick = ()=> { playClick(); showStep(1); };
-
+qs('#toNames').onclick=()=>{SoundManager.play('click');buildNameInputs();showStep(2);};
+qs('#backMode').onclick=()=>{SoundManager.play('click');showStep(1);};
+/* NAME INPUTS */
 function buildNameInputs(){
-  const zone = qs('#nameZone');
-  zone.innerHTML='';
+  const zone=qs('#nameZone'); zone.innerHTML='';
   if(selectedMode==='ai'){
-    zone.innerHTML = `
-      <input id="p1" placeholder="Your Name">
-      <div class="small">AI automatically opponent hai (perfect)</div>
-    `;
-  } else {
-    zone.innerHTML = `
-      <input id="p1" placeholder="Player 1 Name">
-      <input id="p2" placeholder="Player 2 Name">
-    `;
+    zone.innerHTML=`<input id="p1" placeholder="Your Name"> <div class="small">AI Opponent: Perfect Logic</div>`;
+  }else{
+    zone.innerHTML=`<input id="p1" placeholder="Player 1 Name"><input id="p2" placeholder="Player 2 Name">`;
   }
-  const inputs = zone.querySelectorAll('input');
-  inputs.forEach(inp=>inp.addEventListener('input',()=>{
+  const toSummaryBtn=qs('#toSummary');
+  function validate(){
     if(selectedMode==='ai'){
-      player1 = zone.querySelector('#p1').value.trim();
-      player2 = 'AI';
-      toSummaryBtn.disabled = !player1;
+      player1=qs('#p1').value.trim(); player2='AI';
+      toSummaryBtn.disabled=!player1;
     }else{
-      player1 = zone.querySelector('#p1').value.trim();
-      player2 = zone.querySelector('#p2').value.trim();
-      toSummaryBtn.disabled = !(player1 && player2);
+      player1=qs('#p1').value.trim(); player2=qs('#p2').value.trim();
+      toSummaryBtn.disabled=!(player1 && player2);
     }
-  }));
-  toSummaryBtn.disabled = true;
+  }
+  qsa('#nameZone input').forEach(inp=>inp.addEventListener('input',validate));
+  validate();
 }
-
-toSummaryBtn.onclick = ()=>{
-  playClick();
-  summaryBox.innerHTML = `
+qs('#toSummary').onclick=()=>{
+  SoundManager.play('click');
+  qs('#summaryBox').innerHTML=`
     <b>Game:</b> ${gameName(selectedGame)}<br>
     <b>Mode:</b> ${selectedMode==='ai'?'AI vs You':'Friend vs Friend'}<br>
     <b>Players:</b> ${player1} vs ${player2}
   `;
   showStep(3);
 };
-qs('#backToNames').onclick = ()=>{ playClick(); showStep(2); };
-
-startBtn.onclick = ()=>{
-  playClick();
-  startGame();
-};
-
-function gameName(id){
-  return {tictac:'Tic Tac Toe',snake:'Snake & Ladder',dotbox:'Dot Box'}[id]||id;
-}
-
-/* ===============================
-   START GAME
-=============================== */
+qs('#backNames').onclick=()=>{SoundManager.play('click');showStep(2);};
+qs('#startGame').onclick=()=>{SoundManager.play('click');startGame();};
+/* START GAME */
 function startGame(){
-  qs('#flow').querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  qsa('.screen').forEach(s=>s.classList.remove('active'));
   qs('#gameStage').classList.add('active');
-  // Only tictac for step 1
-  if(selectedGame==='tictac'){
-    renderTicTacToe();
-  }else{
-    qs('#gameContainer').innerHTML = '<div style="padding:30px;text-align:center;">Coming Next Step</div>';
-  }
-  startMusic();
-}
-
-qs('#backHome').onclick = ()=>{
-  playClick();
-  resetFlow();
-};
-qs('#restartGame').onclick = ()=>{
-  playClick();
   if(selectedGame==='tictac') renderTicTacToe();
-};
-
-function resetFlow(){
-  stopMusic();
-  Sound.muted && startMusic(); // ignore if muted
-  selectedGame='';selectedMode='';player1='';player2='';
-  toModeBtn.disabled=true;
-  toNamesBtn.disabled=true;
-  toSummaryBtn.disabled=true;
-  qsa('.game-card').forEach(c=>c.classList.remove('selected'));
-  qsa('.mode-btn').forEach(c=>c.classList.remove('selected'));
-  showStep(0);
-  qs('#gameStage').classList.remove('active');
-  qs('#gameContainer').innerHTML='';
+  else qs('#gameContainer').innerHTML='<div style="padding:30px;text-align:center;">Coming soon…</div>';
+  SoundManager.play('bg');
 }
+qs('#homeBtn').onclick=()=>{SoundManager.play('click');resetFlow();};
+qs('#restartBtn').onclick=()=>{SoundManager.play('click'); if(selectedGame==='tictac') renderTicTacToe();};
 
-/* ===============================
-   MUSIC TOGGLE
-=============================== */
-qs('#btnMusic').onclick = ()=>{
-  Sound.muted = !Sound.muted;
-  const ic = qs('#btnMusic');
-  if(Sound.muted){
-    stopMusic();
-    ic.classList.add('muted');
-    ic.textContent='🔇';
-    toast('Music Off');
-  } else {
-    ic.classList.remove('muted');
-    ic.textContent='🔊';
-    startMusic();
-    toast('Music On');
-  }
-  playClick();
-};
-
-/* ===============================
-   TIC TAC TOE (STRONG AI)
-=============================== */
+/* ================== TIC TAC TOE (MINIMAX AI) ================== */
 function renderTicTacToe(){
-  const root = qs('#gameContainer');
-  root.innerHTML = `
+  const root=qs('#gameContainer');
+  root.innerHTML=`
     <div class="tt-wrap">
       <div class="tt-head">Tic Tac Toe</div>
       <div class="tt-players">${player1} <span style="opacity:.6;">vs</span> ${player2}</div>
       <div class="tt-grid" id="ttGrid"></div>
       <div class="tt-status" id="ttStatus"></div>
-    </div>
-  `;
-  const gridEl = qs('#ttGrid');
-  const statusEl = qs('#ttStatus');
-  let board = Array(9).fill(null);
-  let human = 'X';
-  let ai = 'O';
-  let turn = 'X';
-  let finished = false;
-
-  // If friend mode -> no AI
-  const vsAI = (selectedMode==='ai');
-
+    </div>`;
+  const grid=qs('#ttGrid'), status=qs('#ttStatus');
+  let board=Array(9).fill(null);
+  let human='X', ai='O', turn='X', finished=false;
+  const vsAI=(selectedMode==='ai');
   function draw(){
-    gridEl.innerHTML='';
-    board.forEach((val,i)=>{
-      const d = document.createElement('div');
+    grid.innerHTML='';
+    board.forEach((v,i)=>{
+      const d=document.createElement('div');
       d.className='tt-cell';
-      d.textContent = val ? (val==='X'?'❌':'⭕') : '';
-      d.addEventListener('click',()=>handleCell(i));
-      gridEl.appendChild(d);
+      d.textContent=v? (v==='X'?'❌':'⭕') : '';
+      d.onclick=()=> handle(i);
+      if(finished) d.style.pointerEvents='none';
+      grid.appendChild(d);
     });
     updateStatus();
   }
-
   function updateStatus(){
     if(finished) return;
-    statusEl.innerHTML = `<span class="badge">TURN</span><br>${turn===human?player1: (vsAI && turn===ai ? 'AI 🤖' : player2)}`;
+    status.innerHTML=`<span class="badge-turn">TURN</span><br>${turn===human?player1:(vsAI && turn===ai?'AI 🤖':player2)}`;
   }
-
-  function handleCell(i){
-    if(finished || board[i]) return;
-    if(vsAI && turn!==human) return;
+  function handle(i){
+    if(finished||board[i])return;
+    if(vsAI && turn!==human)return;
     board[i]=turn;
-    Sound.play('move');
-    checkGame();
+    SoundManager.play('move');
+    check();
     if(!finished){
-      turn = (turn==='X')?'O':'X';
+      turn=turn==='X'?'O':'X';
       draw();
-      if(vsAI && turn===ai){
-        setTimeout(aiMove, 260);
-      }
-    }else{
-      draw();
-    }
+      if(vsAI && turn===ai) setTimeout(aiMove,250);
+    }else draw();
   }
-
-  function emptyIndices(b){
-    return b.map((v,i)=>v?null:i).filter(v=>v!==null);
-  }
-
-  function checkWin(b){
-    const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(const [a,c,d] of lines){
-      if(b[a] && b[a]===b[c] && b[a]===b[d]) return {winner:b[a], line:[a,c,d]};
-    }
-    if(b.every(Boolean)) return {winner:'draw'};
+  const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  function result(b){
+    for(const [a,c,d] of lines)
+      if(b[a] && b[a]===b[c] && b[a]===b[d]) return {w:b[a],line:[a,c,d]};
+    if(b.every(Boolean)) return {w:'draw'};
     return null;
   }
-
-  function checkGame(){
-    const res = checkWin(board);
-    if(res){
-      finished = true;
-      if(res.winner==='draw'){
-        statusEl.innerHTML = '<b>Draw 🤝</b>';
-        celebration(true);
-      } else {
-        statusEl.innerHTML = `<b>${res.winner==='X'?player1:(vsAI && res.winner===ai ? 'AI 🤖' : player2)} Wins! 🏆</b>`;
-        highlight(res.line);
-        Sound.play('win');
-        celebration();
+  function check(){
+    const r=result(board);
+    if(r){
+      finished=true;
+      if(r.w==='draw'){
+        status.innerHTML='<b>Draw 🤝</b>'; confettiBurst(true);
+      }else{
+        status.innerHTML=`<b>${r.w==='X'?player1:(vsAI && r.w===ai?'AI 🤖':player2)} Wins! 🏆</b>`;
+        highlight(r.line); SoundManager.play('win'); confettiBurst();
       }
     }
   }
-
   function highlight(line){
-    line.forEach(idx=>{
-      gridEl.children[idx].classList.add('win');
-    });
+    line.forEach(i=>grid.children[i].classList.add('win'));
   }
-
-  function minimax(b, depth, isMax){
-    const result = checkWin(b);
-    if(result){
-      if(result.winner===ai) return 10 - depth;
-      if(result.winner===human) return depth - 10;
-      if(result.winner==='draw') return 0;
+  function empties(b){return b.map((v,i)=>v?null:i).filter(v=>v!==null);}
+  function minimax(b,depth,isMax){
+    const r=result(b);
+    if(r){
+      if(r.w===ai)return 10-depth;
+      if(r.w===human)return depth-10;
+      if(r.w==='draw')return 0;
     }
-    const empties = emptyIndices(b);
+    const e=empties(b);
     if(isMax){
-      let best = -Infinity;
-      for(const i of empties){
-        b[i]=ai;
-        best = Math.max(best, minimax(b, depth+1, false));
-        b[i]=null;
+      let best=-Infinity;
+      for(const i of e){
+        b[i]=ai; best=Math.max(best,minimax(b,depth+1,false)); b[i]=null;
       }
       return best;
-    } else {
-      let best = Infinity;
-      for(const i of empties){
-        b[i]=human;
-        best = Math.min(best, minimax(b, depth+1, true));
-        b[i]=null;
+    }else{
+      let best=Infinity;
+      for(const i of e){
+        b[i]=human; best=Math.min(best,minimax(b,depth+1,true)); b[i]=null;
       }
       return best;
     }
   }
-
   function aiMove(){
-    if(finished) return;
-    let bestScore = -Infinity;
-    let move = null;
-    for(const i of emptyIndices(board)){
+    if(finished)return;
+    let bestScore=-Infinity, move=null;
+    for(const i of empties(board)){
       board[i]=ai;
-      let score = minimax(board, 0, false);
+      let score=minimax(board,0,false);
       board[i]=null;
-      if(score>bestScore){
-        bestScore=score;
-        move=i;
-      }
+      if(score>bestScore){bestScore=score;move=i;}
     }
     board[move]=ai;
-    checkGame();
-    if(!finished){
-      turn = human;
-      draw();
-    }else{
-      draw();
-    }
+    SoundManager.play('move');
+    check();
+    if(!finished){turn=human;draw();} else draw();
   }
-
-  function celebration(drawMode=false){
-    const cBox = qs('#confetti');
-    cBox.innerHTML='';
-    const total = drawMode?18:34;
-    for(let i=0;i<total;i++){
-      const sp = document.createElement('span');
-      sp.textContent = drawMode?'🤝':'🎉';
-      const size = Math.random()*18+18;
-      sp.style.position='absolute';
-      sp.style.left = (Math.random()*100)+'%';
-      sp.style.top = (Math.random()*100)+'%';
-      sp.style.fontSize = size+'px';
-      sp.style.transform='translate(-50%,-50%) scale(.2)';
-      sp.style.animation = 'burst .9s cubic-bezier(.34,1.6,.64,1) '+(Math.random()*0.4)+'s both';
-      cBox.appendChild(sp);
-    }
-  }
-
-  // Confetti animation style injection
-  if(!document.getElementById('burstAnim')){
-    const st = document.createElement('style');
-    st.id='burstAnim';
-    st.textContent=`@keyframes burst{0%{transform:translate(-50%,-50%) scale(.2) rotate(0deg);opacity:0;}60%{opacity:1;}100%{transform:translate(-50%,-50%) scale(1) rotate(360deg);opacity:0;}}`;
-    document.head.appendChild(st);
-  }
-
   draw();
   if(vsAI && turn===ai) aiMove();
 }
 
-/* ===============================
-   INIT
-=============================== */
-console.log('[0x Battle Hub] Step 1 loaded');
-startMusic(); // Start soft tone (auto)
+/* ================== SETTINGS PANEL ================== */
+const settingsPanel=qs('#settingsPanel');
+qs('#settingsBtn').onclick=()=>{settingsPanel.classList.add('active');SoundManager.play('click');};
+qs('#closeSettings').onclick=()=>{settingsPanel.classList.remove('active');SoundManager.play('click');};
+settingsPanel.addEventListener('click',e=>{
+  if(e.target===settingsPanel){settingsPanel.classList.remove('active');SoundManager.play('click');}
+});
+qsa('.test-btn[data-play]').forEach(btn=>{
+  btn.onclick=()=>{SoundManager.play(btn.dataset.play);};
+});
+qs('#toggleMusic').onclick=()=>{
+  SoundManager.play('click');
+  SoundManager.muted?SoundManager.toggleMute(qs('#musicBtn')):SoundManager.toggleMute(qs('#musicBtn')); // uses toggle function
+};
+qs('#resetSounds').onclick=()=>{if(confirm('Reset all custom sounds?')) SoundManager.reset();};
+/* Upload handlers */
+qs('#sndClick').addEventListener('change',e=>{const f=e.target.files[0];if(f)SoundManager.setCustom('click',f);});
+qs('#sndMove').addEventListener('change',e=>{const f=e.target.files[0];if(f)SoundManager.setCustom('move',f);});
+qs('#sndWin').addEventListener('change',e=>{const f=e.target.files[0];if(f)SoundManager.setCustom('win',f);});
+qs('#sndBg').addEventListener('change',e=>{const f=e.target.files[0];if(f)SoundManager.setCustom('bg',f);});
+
+/* MUSIC BUTTON */
+qs('#musicBtn').onclick=()=>{SoundManager.toggleMute(qs('#musicBtn'));SoundManager.play('click');};
+
+/* ================== DONATION MODAL ================== */
+const donateModal=qs('#donateModal');
+qs('#donateBtn').onclick=()=>{donateModal.classList.add('active');SoundManager.play('click');};
+qs('#closeDonate').onclick=()=>{donateModal.classList.remove('active');SoundManager.play('click');};
+donateModal.addEventListener('click',e=>{
+  if(e.target===donateModal){donateModal.classList.remove('active');SoundManager.play('click');}
+});
+qsa('.amount-btn').forEach(b=>{
+  b.onclick=()=>{qs('#donateAmount').value=b.dataset.amt;SoundManager.play('click');};
+});
+qs('#copyUpi').onclick=()=>{
+  navigator.clipboard.writeText('kk2112423@oksbi').then(()=>toast('UPI ID Copied'));
+  SoundManager.play('click');
+};
+qs('#payNowBtn').onclick=()=>{
+  SoundManager.play('click');
+  const amt=(qs('#donateAmount').value||'').trim();
+  let uri=`upi://pay?pa=kk2112423@oksbi&pn=Harsh%20Vardhan&tn=Support%20the%20Game&cu=INR`;
+  if(amt && !isNaN(+amt)) uri+=`&am=${encodeURIComponent(amt)}`;
+  // Attempt redirect
+  window.location.href=uri;
+  toast('Opening UPI (if supported)…');
+};
+
+/* ================== INIT ================== */
+(function init(){
+  SoundManager.play('bg');
+  console.log('%c[0x Battle Hub] Loaded','background:#ffbe0b;color:#222;padding:4px 8px;border-radius:6px;font-weight:bold;');
+})();
+
+/* ESC closes modals */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(settingsPanel.classList.contains('active')) settingsPanel.classList.remove('active');
+    if(donateModal.classList.contains('active')) donateModal.classList.remove('active');
+  }
+});
 </script>
 </body>
 </html>
