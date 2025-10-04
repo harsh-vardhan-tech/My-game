@@ -1,4 +1,0 @@
-@keyframes fade{0%{opacity:0;transform:translateY(12px);}100%{opacity:1;transform:translateY(0);}}
-@keyframes fadeDown{0%{opacity:0;transform:translateY(-10px);}100%{opacity:1;transform:translateY(0);}}
-@keyframes pop{0%{transform:scale(.6);opacity:0;}60%{transform:scale(1.06);opacity:1;}100%{transform:scale(1);opacity:1;}}
-@keyframes burst{0%{transform:translate(-50%,-50%) scale(.2) rotate(0deg);opacity:0;}60%{opacity:1;}100%{transform:translate(-50%,-50%) scale(1) rotate(360deg);opacity:0;}}
