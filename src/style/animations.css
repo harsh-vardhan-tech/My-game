@@ -1,0 +1,44 @@
+@keyframes fade {
+  0% {opacity:0; transform:translateY(12px);}
+  100% {opacity:1; transform:translateY(0);}
+}
+
+@keyframes fadeDown {
+  0% {opacity:0; transform:translateY(-12px);}
+  100% {opacity:1; transform:translateY(0);}
+}
+
+@keyframes pop {
+  0% {transform:scale(.55); opacity:0;}
+  60% {transform:scale(1.08); opacity:1;}
+  100% {transform:scale(1); opacity:1;}
+}
+
+@keyframes burst {
+  0% {transform:translate(-50%,-50%) scale(.2) rotate(0deg); opacity:0;}
+  60% {opacity:1;}
+  100% {transform:translate(-50%,-50%) scale(1) rotate(360deg); opacity:0;}
+}
+
+@keyframes pulseWin {
+  0% {box-shadow:0 0 20px #ffbe0bbb;}
+  50% {box-shadow:0 0 38px #ffbe0bff;}
+  100% {box-shadow:0 0 20px #ffbe0bbb;}
+}
+
+@keyframes scaleIn {
+  0% {transform:scaleX(0); opacity:0;}
+  60% {transform:scaleX(1.05); opacity:1;}
+  100% {transform:scaleX(1); opacity:1;}
+}
+
+@keyframes fadeUp {
+  0% {transform:translateY(20px); opacity:0;}
+  100% {transform:translateY(0); opacity:1;}
+}
+
+@keyframes bounceIn {
+  0% {transform:scale(.2) translateY(40px); opacity:0;}
+  60% {transform:scale(1.15) translateY(-6px); opacity:1;}
+  100% {transform:scale(1) translateY(0); opacity:1;}
+    }
